@@ -1,12 +1,13 @@
 /* DLIND Catálogo — Service Worker (offline-first) */
-const CACHE = 'dlind-catalogo-v1';
+const CACHE = 'dlind-catalogo-v2';
 const PRECACHE = [
   './',
   './index.html',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
-  './icons/icon-maskable-512.png'
+  './icons/icon-maskable-512.png',
+  './videos/rr99-rendimiento.mp4'
 ];
 
 self.addEventListener('install', e => {
