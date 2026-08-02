@@ -11,6 +11,7 @@ module.exports = async (req, res) => {
     if (!type || !title) return res.status(400).json({ error: 'Faltan type/title' });
 
     const db = admin.firestore();
+    // stock_alert → solo admin y gerentes · restock y broadcast → todo el equipo
     const roles = type === 'stock_alert' ? ['admin', 'gerente'] : ['admin', 'gerente', 'vendedor'];
     const snap = await db.collection('usuarios')
       .where('activo', '==', true).where('rol', 'in', roles).get();

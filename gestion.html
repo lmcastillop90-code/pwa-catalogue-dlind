@@ -77,6 +77,31 @@ header{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);background:li
 .tab{flex:none;padding:11px 20px;border-radius:99px;font-size:13px;font-weight:700;cursor:pointer;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:var(--muted);transition:var(--transition);display:flex;align-items:center;gap:8px}
 .tab.on{background:linear-gradient(135deg,var(--red),var(--red-dark));color:#fff;border-color:transparent;box-shadow:0 6px 16px -6px rgba(164,29,59,.75)}
 .tab .cnt{background:rgba(255,255,255,.2);font-size:10.5px;padding:2px 8px;border-radius:99px}
+/* pestañas principales (segmented premium) */
+.seg{
+  display:flex;gap:5px;padding:6px;margin-bottom:22px;border-radius:20px;
+  background:rgba(10,13,18,.72);border:1px solid rgba(217,179,106,.25);
+  box-shadow:inset 0 3px 12px rgba(0,0,0,.45), 0 8px 26px -14px rgba(0,0,0,.7);
+  overflow-x:auto;scrollbar-width:none;
+}
+.seg::-webkit-scrollbar{display:none}
+.seg .tab{
+  flex:1;justify-content:center;min-width:104px;
+  background:none;border:1px solid transparent;border-radius:15px;
+  padding:12px 14px;font-size:12.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+  color:var(--muted);display:flex;align-items:center;gap:9px;transition:var(--transition);
+  position:relative;
+}
+.seg .tab:hover{color:#fff;background:rgba(255,255,255,.045)}
+.seg .tab.on{
+  background:linear-gradient(140deg,#c22548,var(--red) 55%,var(--red-dark));
+  color:#fff;border-color:rgba(255,255,255,.18);
+  box-shadow:0 8px 22px -8px rgba(164,29,59,.85), inset 0 1px 0 rgba(255,255,255,.22);
+}
+.seg .tab.on::after{
+  content:"";position:absolute;left:22%;right:22%;bottom:5px;height:2px;border-radius:99px;
+  background:linear-gradient(90deg,transparent,var(--gold-soft),transparent);
+}
 /* resumen chips */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
 .stat{
@@ -95,6 +120,7 @@ header{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);background:li
 .stat.warn b{color:var(--warn)} .stat.bad b{color:var(--bad)} .stat.ok b{color:var(--ok)}
 .stat.click{cursor:pointer}
 .stat.click:active{transform:scale(.97)}
+.stat.filter-on{border-color:var(--gold);box-shadow:0 0 0 2px rgba(217,179,106,.28), 0 10px 26px -14px rgba(0,0,0,.7)}
 .s-cta{position:absolute;bottom:10px;right:14px;font-size:9.5px;font-style:normal;font-weight:800;color:var(--gold);letter-spacing:.5px;opacity:0;transition:var(--transition)}
 .stat.click:hover .s-cta{opacity:1}
 @media(max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}}
@@ -312,6 +338,7 @@ header{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);background:li
       <button onclick="pinKey(7)">7</button><button onclick="pinKey(8)">8</button><button onclick="pinKey(9)">9</button>
       <button class="pk-ghost" onclick="pinClear()">C</button><button onclick="pinKey(0)">0</button><button class="pk-ghost" onclick="pinBack()">⌫</button>
     </div>
+    <div class="back-btn" style="margin-top:18px;width:100%;justify-content:center" onclick="location.href='index.html'">← Volver al catálogo</div>
     <div class="login-hint">🔒 Acceso solo para personal autorizado de <b>DLIND</b>. Si olvidaste tu PIN, contacta al administrador.</div>
   </div>
 </div>
@@ -331,7 +358,7 @@ header{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);background:li
   </header>
 
   <div class="wrap">
-    <div class="tabs">
+    <div class="tabs seg">
       <div class="tab on" id="tabStock" onclick="showTab('stock')">📦 Stock</div>
       <div class="tab" id="tabUsers" onclick="showTab('users')">👥 Usuarios</div>
       <div class="tab" id="tabHist" onclick="showTab('hist')">🕐 Historial</div>
@@ -345,7 +372,10 @@ header{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);background:li
         <div class="stat warn click" onclick="openStockState('low')"><span class="s-ico">⚠️</span><b id="shLow">0</b><span>Por agotarse</span><i class="s-cta">Ver →</i></div>
         <div class="stat bad click" onclick="openStockState('out')"><span class="s-ico">🔴</span><b id="shOut">0</b><span>Agotados · reponer</span><i class="s-cta">Ver →</i></div>
       </div>
-      <p style="color:var(--muted);font-size:13px;margin:4px 0 14px">Selecciona una categoría para gestionar su stock</p>
+      <div style="display:flex;align-items:center;gap:12px;margin:4px 0 14px;flex-wrap:wrap">
+        <p style="color:var(--muted);font-size:13px;flex:1">Selecciona una categoría para gestionar su stock</p>
+        <div class="back-btn" id="btnBroadcast" onclick="sendBroadcast()">📣 Avisar al equipo</div>
+      </div>
       <div class="cat-menu" id="stockCatMenu"></div>
     </div>
 
@@ -356,10 +386,10 @@ header{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);background:li
         <h2 style="font-size:19px;font-weight:900" id="stockTitle">Todos los productos</h2>
       </div>
       <div class="stats">
-        <div class="stat"><span class="s-ico">📦</span><b id="stTotal">0</b><span>Productos</span></div>
-        <div class="stat ok"><span class="s-ico">✅</span><b id="stOk">0</b><span>Con stock sano</span></div>
-        <div class="stat warn"><span class="s-ico">⚠️</span><b id="stLow">0</b><span>Por agotarse</span></div>
-        <div class="stat bad"><span class="s-ico">🔴</span><b id="stOut">0</b><span>Agotados · reponer</span></div>
+        <div class="stat click" onclick="listState(null)"><span class="s-ico">📦</span><b id="stTotal">0</b><span>Productos</span></div>
+        <div class="stat ok click" id="cardOk" onclick="listState('ok')"><span class="s-ico">✅</span><b id="stOk">0</b><span>Con stock sano</span></div>
+        <div class="stat warn click" id="cardLow" onclick="listState('low')"><span class="s-ico">⚠️</span><b id="stLow">0</b><span>Por agotarse</span></div>
+        <div class="stat bad click" id="cardOut" onclick="listState('out')"><span class="s-ico">🔴</span><b id="stOut">0</b><span>Agotados · reponer</span></div>
       </div>
       <div class="tabs hidden" id="listChips" style="margin-bottom:14px"></div>
       <div class="readonly-note hidden" id="roNote">🔒 Tu perfil es de <b>solo consulta</b>. El gerente puede darte permiso de edición desde la pestaña Usuarios.</div>
@@ -688,6 +718,11 @@ function openStockState(st){ curCat="all"; listMode="all"; stateFilter=st; $("#s
 function clearStateFilter(){ stateFilter=null; resetList(); renderStock(); }
 function setListCat(c){ curCat=c; resetList(); renderStock(); }
 function resort(){ resetList(); renderStock(); }
+/* toggle de filtro desde las tarjetas de resumen de la lista */
+function listState(st){
+  stateFilter = (stateFilter===st) ? null : st;   // tocar la misma = quitar filtro
+  resetList(); renderStock();
+}
 
 /* ===== render stock (misma UI del prototipo) ===== */
 function stState(s){
@@ -757,6 +792,10 @@ function renderStock(){
   renderListChips();
   $("#stateFilterChip").innerHTML = stateFilter ?
     `<span class="state-chip ${stateFilter}" onclick="clearStateFilter()">${STATE_LBL[stateFilter]} <span class="x">✕</span></span>` : "";
+  // resaltar la tarjeta del filtro activo
+  [["cardOk","ok"],["cardLow","low"],["cardOut","out"]].forEach(([id,st])=>{
+    const el=$("#"+id); if(el) el.classList.toggle("filter-on", stateFilter===st);
+  });
   const q=($("#sq").value||"").toLowerCase();
   const base=STOCK.filter(s=>curCat==="all"||s.cat===curCat);
   let list=base.filter(s=>!q||(s.name+s.brand+s.sub+s.code).toLowerCase().includes(q));
@@ -842,6 +881,7 @@ const pend = {}; const pendTmr = {};
 function adj(code,d){
   const s=STOCK.find(x=>x.code===code);
   if(!s || s.qty+d<0) return;
+  if(!(code in pend)) s._prevCls = stState(s).cls;  // estado ANTES del bloque de ajustes
   s.qty+=d; s.upd="ahora mismo · "+session.nombre;
   pend[code]=(pend[code]||0)+d;
   updateRow(s);
@@ -877,10 +917,25 @@ async function undo(code,delta){
   toast("↩ Cambio revertido");
 }
 function checkAlert(s){
-  if(s.qty===0)
+  const now = stState(s).cls, prev = s._prevCls;
+  s._prevCls = undefined;
+  if(prev===now) return;  // solo notifica al CRUZAR de estado (evita spam en ajustes repetidos)
+  if(now==="out")
     api("/api/notify",{type:"stock_alert",title:"🔴 Producto agotado",body:`${s.brand} ${s.name} (${s.sub}) se agotó — reponer`}).catch(()=>{});
-  else if(s.qty<=s.min)
+  else if(now==="low")
     api("/api/notify",{type:"stock_alert",title:"⚠ Stock por agotarse",body:`${s.brand} ${s.name}: quedan ${s.qty} (mínimo ${s.min})`}).catch(()=>{});
+  else if(now==="ok" && (prev==="out"||prev==="low"))
+    api("/api/notify",{type:"restock",title:"📦 ¡Llegó mercancía!",body:`${s.brand} ${s.name} (${s.sub}): ${s.qty} unidades disponibles`}).catch(()=>{});
+}
+/* aviso manual a todo el equipo */
+async function sendBroadcast(){
+  if(!perms().editar) return toast("⚠ Necesitas permiso de edición para enviar avisos");
+  const msg = prompt("Mensaje para todo el equipo:");
+  if(!msg || !msg.trim()) return;
+  try{
+    const r = await api("/api/notify",{type:"broadcast",title:"📣 Aviso DLIND",body:msg.trim()});
+    toast(`📣 Aviso enviado a ${r.sent} equipo${r.sent!==1?"s":""}`);
+  }catch(e){ toast("⚠ "+e.message); }
 }
 
 /* modal cantidad exacta */
@@ -897,6 +952,7 @@ function closeQm(){ $("#qmodal").classList.remove("open"); }
 async function saveQm(){
   const s=STOCK.find(x=>x.code===qmCode);
   const nq=Math.max(0,parseInt($("#qmQty").value||0)), nm=Math.max(0,parseInt($("#qmMin").value||0));
+  s._prevCls = stState(s).cls;
   s.qty=nq; s.min=nm; s.upd="ahora mismo · "+session.nombre;
   closeQm(); renderStock();
   try{
@@ -1091,7 +1147,7 @@ if("serviceWorker" in navigator && location.protocol!=="file:")
 
 /* exponer handlers a los onclick del HTML */
 Object.assign(window,{pinKey,pinBack,pinClear,doLogin,doLogout,showTab,stockHome,openStockCat,openStockState,
-  clearStateFilter,setListCat,resort,adj,openQm,closeQm,saveQm,togglePerms,setPerm,toggleUser,changePin,
+  clearStateFilter,setListCat,resort,listState,sendBroadcast,adj,openQm,closeQm,saveQm,togglePerms,setPerm,toggleUser,changePin,
   openNewUser,closeNewUser,saveNewUser,deleteUser,setHistDay,setHistUser,toast,seedStock,renderStock});
 
 loadDirectorio();
