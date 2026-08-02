@@ -316,7 +316,7 @@ header{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);background:li
   <header>
     <div class="header-in">
       <div class="logo-oval"><span>DLIND</span></div>
-      <div class="h-title"><small>Gestión</small><b>Sede Principal</b></div>
+      <div class="h-title"><small>Gestión</small><b>Inventario DLIND</b></div>
       <div class="h-user">
         <div class="avatar" id="uAvatar">R</div>
         <div class="who"><b id="uName">Rhebeca</b><span id="uRole">Gerente</span></div>
@@ -360,7 +360,7 @@ header{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);background:li
       <div class="readonly-note hidden" id="roNote">🔒 Tu perfil es de <b>solo consulta</b>. El gerente puede darte permiso de edición desde la pestaña Usuarios.</div>
       <div class="list-tools">
         <div class="sort-sel">Ordenar:
-          <select id="sortSel" onchange="renderStock()">
+          <select id="sortSel" onchange="resort()">
             <option value="low">Menor stock primero</option>
             <option value="name">Nombre A–Z</option>
             <option value="recent">Más reciente</option>
@@ -468,6 +468,7 @@ let STOCK = [];              // stock mapeado a la UI
 let USERS = [];              // usuarios (solo con permiso)
 let HIST = [];               // movimientos
 let curCat="all", listMode="cat", stateFilter=null, histDay="Todos", histUser="Todos";
+let listOrder=null, listRevealed=false;  // orden congelado mientras se trabaja en la lista
 let subs = [];               // unsubscribers
 
 const CATS = [
@@ -602,8 +603,14 @@ function enterApp(){
   $("#roNote").classList.toggle("hidden", p.editar);
   showTab("stock");
   subscribe();
-  setTimeout(setupPush, 2500);
   toast(`👋 Bienvenido, ${session.nombre}`);
+  // Notificaciones: si ya hay permiso, registrar; si no, ofrecer con un toque (iOS lo exige así)
+  setTimeout(()=>{
+    if(!("Notification" in window)) return;
+    if(Notification.permission==="granted") setupPush();
+    else if(Notification.permission==="default")
+      toastAction("🔔 Recibe alertas de stock en este equipo","Activar",setupPush);
+  }, 1800);
 }
 
 /* ===== suscripciones en tiempo real ===== */
@@ -626,6 +633,7 @@ function subscribe(){
         return {id:d.id, name:x.nombre, initial:(x.nombre||"?")[0].toUpperCase(), role:x.rol,
                 sub:(x.rol==="admin"?"Administrador del sistema":x.rol==="gerente"?"Gerente · Sede Principal":"Vendedor")+(x.activo?"":" · DESACTIVADO"),
                 activo:x.activo,
+                slug:x.slug||"",
                 perms:{ver:x.permisos?.ver_stock===true, editar:x.permisos?.editar_stock===true,
                        usuarios:x.permisos?.gestionar_usuarios===true, historial:x.permisos?.ver_historial===true}};
       }).sort((a,b)=>(a.role==="admin"?0:a.role==="gerente"?1:2)-(b.role==="admin"?0:b.role==="gerente"?1:2));
@@ -666,13 +674,15 @@ function showTab(t){
   if(t==="users") renderUsers();
   if(t==="hist") renderHist();
 }
+function resetList(){ listOrder=null; listRevealed=false; }
 function stockHome(){ $("#viewStock").classList.add("hidden"); $("#viewStockHome").classList.remove("hidden"); renderStockMenu(); }
-function openStockCat(c){ curCat=c; listMode=(c==="all")?"all":"cat"; stateFilter=null; $("#sq").value="";
+function openStockCat(c){ curCat=c; listMode=(c==="all")?"all":"cat"; stateFilter=null; $("#sq").value=""; resetList();
   $("#viewStockHome").classList.add("hidden"); $("#viewStock").classList.remove("hidden"); window.__animStats=true; renderStock(); }
-function openStockState(st){ curCat="all"; listMode="all"; stateFilter=st; $("#sq").value="";
+function openStockState(st){ curCat="all"; listMode="all"; stateFilter=st; $("#sq").value=""; resetList();
   $("#viewStockHome").classList.add("hidden"); $("#viewStock").classList.remove("hidden"); window.__animStats=true; renderStock(); }
-function clearStateFilter(){ stateFilter=null; renderStock(); }
-function setListCat(c){ curCat=c; renderStock(); }
+function clearStateFilter(){ stateFilter=null; resetList(); renderStock(); }
+function setListCat(c){ curCat=c; resetList(); renderStock(); }
+function resort(){ resetList(); renderStock(); }
 
 /* ===== render stock (misma UI del prototipo) ===== */
 function stState(s){
@@ -746,10 +756,19 @@ function renderStock(){
   const base=STOCK.filter(s=>curCat==="all"||s.cat===curCat);
   let list=base.filter(s=>!q||(s.name+s.brand+s.sub+s.code).toLowerCase().includes(q));
   if(stateFilter) list=list.filter(s=>stState(s).cls===stateFilter);
-  const sort=$("#sortSel").value;
-  if(sort==="low")  list=[...list].sort((a,b)=>(a.qty/Math.max(a.min,1))-(b.qty/Math.max(b.min,1)));
-  if(sort==="name") list=[...list].sort((a,b)=>(a.brand+a.name).localeCompare(b.brand+b.name));
-  if(sort==="recent")list=[...list].sort((a,b)=>(a.upd.includes("ahora")?-1:1)-(b.upd.includes("ahora")?-1:1));
+  // el orden se calcula UNA vez al entrar y queda congelado (evita que las filas salten al ajustar)
+  if(!listOrder){
+    const sort=$("#sortSel").value;
+    let sorted=[...list];
+    if(sort==="low")  sorted.sort((a,b)=>(a.qty/Math.max(a.min,1))-(b.qty/Math.max(b.min,1)));
+    if(sort==="name") sorted.sort((a,b)=>(a.brand+a.name).localeCompare(b.brand+b.name));
+    if(sort==="recent")sorted.sort((a,b)=>(a.upd.includes("ahora")?-1:1)-(b.upd.includes("ahora")?-1:1));
+    listOrder=sorted.map(s=>s.code);
+  }
+  list=[...list].sort((a,b)=>{
+    const ia=listOrder.indexOf(a.code), ib=listOrder.indexOf(b.code);
+    return (ia===-1?999:ia)-(ib===-1?999:ib);
+  });
   const canEdit=perms().editar;
   const setN=window.__animStats?animNum:(el,v)=>{el.textContent=v};
   window.__animStats=false;
@@ -761,7 +780,7 @@ function renderStock(){
     const st=stState(s);
     const scale=Math.max(s.min*3,1), pct=Math.min(100,Math.round(s.qty/scale*100)), minpos=Math.min(96,Math.round(s.min/scale*100));
     return `
-    <div class="srow ${st.cls}" id="row-${s.code}" style="transition-delay:${i*40}ms">
+    <div class="srow ${st.cls} ${listRevealed?"reveal":""}" id="row-${s.code}" style="transition-delay:${listRevealed?0:i*40}ms">
       <div class="sthumb"><img src="${imgSrc(s.img)}"></div>
       <div class="sinfo">
         <div class="s-brand">${s.brand}</div>
@@ -782,9 +801,35 @@ function renderStock(){
       </div>
     </div>`;
   }).join("") || `<div style="text-align:center;color:var(--muted);padding:36px 0;font-size:13px">Sin productos aquí</div>`;
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    document.querySelectorAll(".srow").forEach(r=>r.classList.add("reveal"));
-  }));
+  if(!listRevealed){
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      document.querySelectorAll(".srow").forEach(r=>r.classList.add("reveal"));
+      listRevealed=true;
+    }));
+  }
+}
+
+/* actualización EN SITIO de una sola fila (sin re-dibujar la lista → cero brincos) */
+function updateRow(s){
+  const row=$("#row-"+s.code);
+  if(!row){ renderStock(); return; }
+  const st=stState(s);
+  row.classList.remove("ok","low","out"); row.classList.add(st.cls);
+  const qtyEl=row.querySelector(".qty"); if(qtyEl) qtyEl.innerHTML=`${s.qty}<small>UNIDADES</small>`;
+  const badge=row.querySelector(".sbadge"); if(badge){ badge.className="sbadge "+st.cls; badge.textContent=st.txt; }
+  const fill=row.querySelector(".lvl-fill");
+  if(fill){
+    const scale=Math.max(s.min*3,1);
+    fill.className="lvl-fill "+st.cls;
+    fill.style.width=Math.min(100,Math.round(s.qty/scale*100))+"%";
+  }
+  const upd=row.querySelector(".s-upd"); if(upd) upd.textContent="Actualizado "+s.upd;
+  // resumen (sin animación)
+  const base=STOCK.filter(x=>curCat==="all"||x.cat===curCat);
+  $("#stTotal").textContent=base.length;
+  $("#stOk").textContent=base.filter(x=>x.qty>x.min).length;
+  $("#stLow").textContent=base.filter(x=>x.qty>0&&x.qty<=x.min).length;
+  $("#stOut").textContent=base.filter(x=>x.qty===0).length;
 }
 
 /* ===== ajustes de stock (optimista + debounce + deshacer + alertas) ===== */
@@ -794,7 +839,7 @@ function adj(code,d){
   if(!s || s.qty+d<0) return;
   s.qty+=d; s.upd="ahora mismo · "+session.nombre;
   pend[code]=(pend[code]||0)+d;
-  renderStock();
+  updateRow(s);
   const row=$("#row-"+code); if(row){row.classList.add("flash"); setTimeout(()=>row.classList.remove("flash"),650);}
   clearTimeout(pendTmr[code]);
   pendTmr[code]=setTimeout(()=>flush(code),1300);
@@ -820,7 +865,7 @@ async function flush(code){
 async function undo(code,delta){
   const s=STOCK.find(x=>x.code===code);
   if(!s || s.qty-delta<0) return;
-  s.qty-=delta; renderStock();
+  s.qty-=delta; s.upd="ahora mismo · "+session.nombre; updateRow(s);
   await updateDoc(doc(db,"stock",code),{cantidad:increment(-delta),actualizadoEl:serverTimestamp(),actualizadoPor:session.nombre}).catch(()=>{});
   addDoc(collection(db,"movimientos"),{codigo:code,producto:`${s.brand} ${s.name}`,tipo:"ajuste",delta:-delta,
     cantidadResultante:s.qty,usuario:session.nombre,uid:session.uid,sedeId:"principal",fecha:serverTimestamp(),nota:"deshacer"});
@@ -892,7 +937,8 @@ function renderUsers(){
         ${canManage && !locked ? `
         <div class="u-actions">
           <div class="u-act" title="Cambiar PIN" onclick="changePin('${u.id}','${u.name}')">🔑</div>
-          <div class="u-act ${u.activo?'danger':''}" title="${u.activo?'Desactivar':'Reactivar'}" onclick="toggleUser('${u.id}',${!u.activo})">${u.activo?"🚫":"✅"}</div>
+          <div class="u-act" title="${u.activo?'Desactivar (conserva historial)':'Reactivar'}" onclick="toggleUser('${u.id}',${!u.activo})">${u.activo?"🚫":"✅"}</div>
+          <div class="u-act danger" title="Eliminar definitivamente" onclick="deleteUser('${u.id}','${u.name}')">🗑</div>
         </div>`:""}
         <span class="uexp" onclick="togglePerms('${u.id}')" id="exp-${u.id}">Permisos ▾</span>
       </div>
@@ -935,14 +981,31 @@ async function changePin(uid,nombre){
 }
 function openNewUser(){ $("#numodal").classList.add("open"); }
 function closeNewUser(){ $("#numodal").classList.remove("open"); }
+let creatingUser=false;
 async function saveNewUser(){
-  const nombre=$("#nuName").value.trim(), slug=$("#nuSlug").value.trim(), pinv=$("#nuPin").value.trim(), rol=$("#nuRol").value;
-  if(!nombre||!slug||!/^\d{4,6}$/.test(pinv)) return toast("Completa nombre, usuario y PIN (4-6 dígitos)");
+  if(creatingUser) return; // evita el doble-toque
+  const nombre=$("#nuName").value.trim(), slug=$("#nuSlug").value.trim().toLowerCase(), pinv=$("#nuPin").value.trim(), rol=$("#nuRol").value;
+  if(!nombre || nombre.length<2)        return toast("⚠ Escribe el nombre completo");
+  if(!/^[a-z0-9]{3,15}$/.test(slug))    return toast("⚠ Usuario: una palabra, 3-15 letras/números, sin espacios");
+  if(!/^\d{4,6}$/.test(pinv))           return toast("⚠ El PIN debe tener 4 a 6 dígitos");
+  if(USERS.some(u=>u.slug===slug))      return toast(`⚠ El usuario "${slug}" ya existe`);
+  if(USERS.some(u=>u.name.toLowerCase()===nombre.toLowerCase())) return toast(`⚠ Ya existe alguien llamado "${nombre}"`);
+  creatingUser=true;
+  const btn=document.querySelector("#numodal .btn.primary");
+  const prev=btn.textContent; btn.textContent="Creando…"; btn.style.opacity=".6";
   try{
     await api("/api/users",{action:"create",nombre,slug,pin:pinv,rol});
     closeNewUser();
     $("#nuName").value=""; $("#nuSlug").value=""; $("#nuPin").value="";
     toast(`✅ ${nombre} creado — ya puede entrar con su PIN`);
+  }catch(e){ toast("⚠ "+e.message); }
+  finally{ creatingUser=false; btn.textContent=prev; btn.style.opacity="1"; }
+}
+async function deleteUser(uid,nombre){
+  if(!confirm(`¿Eliminar definitivamente a ${nombre}?\n\nSe borra su acceso y su usuario. Sus movimientos pasados quedan en el historial con su nombre.`)) return;
+  try{
+    await api("/api/users",{action:"delete",uid});
+    toast(`🗑 ${nombre} eliminado`);
   }catch(e){ toast("⚠ "+e.message); }
 }
 
@@ -991,13 +1054,16 @@ async function setupPush(){
     const reg = await navigator.serviceWorker.ready;
     const messaging = getMessaging(app);
     const token = await getToken(messaging,{vapidKey:VAPID_KEY, serviceWorkerRegistration:reg});
-    if(token) await updateDoc(doc(db,"usuarios",session.uid),{fcmTokens:arrayUnion(token)});
-  }catch(e){ /* push no disponible en este equipo — no es crítico */ }
+    if(token){
+      await updateDoc(doc(db,"usuarios",session.uid),{fcmTokens:arrayUnion(token)});
+      toast("🔔 Notificaciones activadas en este equipo");
+    }
+  }catch(e){ toast("⚠ No se pudieron activar las notificaciones: "+(e.message||e)); }
 }
 
 /* ===== varios ===== */
 let tmr;
-$("#sq").addEventListener("input",()=>{clearTimeout(tmr);tmr=setTimeout(renderStock,150);});
+$("#sq").addEventListener("input",()=>{clearTimeout(tmr);tmr=setTimeout(()=>{listOrder=null;renderStock();},150);});
 document.addEventListener("keydown",e=>{
   if(e.key==="Escape"){ if($("#qmodal").classList.contains("open")) closeQm(); else if($("#numodal")?.classList.contains("open")) closeNewUser(); }
 });
@@ -1020,8 +1086,8 @@ if("serviceWorker" in navigator && location.protocol!=="file:")
 
 /* exponer handlers a los onclick del HTML */
 Object.assign(window,{pinKey,pinBack,pinClear,doLogin,doLogout,showTab,stockHome,openStockCat,openStockState,
-  clearStateFilter,setListCat,adj,openQm,closeQm,saveQm,togglePerms,setPerm,toggleUser,changePin,
-  openNewUser,closeNewUser,saveNewUser,setHistDay,setHistUser,toast,seedStock,renderStock});
+  clearStateFilter,setListCat,resort,adj,openQm,closeQm,saveQm,togglePerms,setPerm,toggleUser,changePin,
+  openNewUser,closeNewUser,saveNewUser,deleteUser,setHistDay,setHistUser,toast,seedStock,renderStock});
 
 loadDirectorio();
 </script>

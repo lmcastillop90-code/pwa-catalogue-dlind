@@ -977,7 +977,7 @@ async function installApp(){
   } else if (/iPhone|iPad|iPod/.test(navigator.userAgent)){
     toast('🍎 En iPhone/iPad: botón Compartir → "Añadir a pantalla de inicio"');
   } else {
-    toast('📲 Abre este catálogo desde el link publicado para instalarlo como app');
+    toast('📲 Para instalar: abre el menú del navegador (⋮ o Compartir) y elige "Instalar aplicación" / "Añadir a pantalla de inicio"');
   }
 }
 if ('serviceWorker' in navigator && location.protocol !== 'file:'){

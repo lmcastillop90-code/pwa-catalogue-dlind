@@ -47,6 +47,20 @@ module.exports = async (req, res) => {
       return res.json({ ok: true });
     }
 
+    if (action === 'delete') {
+      const { uid } = req.body;
+      if (!uid) return res.status(400).json({ error: 'Falta uid' });
+      if (uid === caller.uid) return res.status(400).json({ error: 'No puedes eliminarte a ti mismo' });
+      const target = await db.doc(`usuarios/${uid}`).get();
+      if (!target.exists) return res.status(404).json({ error: 'No existe' });
+      if (target.data().rol === 'admin' && caller.rol !== 'admin')
+        return res.status(403).json({ error: 'Solo un admin elimina a un admin' });
+      await admin.auth().deleteUser(uid).catch(() => {});
+      await db.doc(`usuarios/${uid}`).delete();
+      await db.doc(`directorio/${uid}`).delete();
+      return res.json({ ok: true });
+    }
+
     if (action === 'setpin') {
       const { uid, pin } = req.body;
       if (!uid || !/^\d{4,6}$/.test(String(pin))) return res.status(400).json({ error: 'PIN inválido' });
