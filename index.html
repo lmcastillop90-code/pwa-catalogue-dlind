@@ -42,6 +42,7 @@ body::before{ /* subtle tire-track texture */
 /* ---------- HEADER ---------- */
 header{
   position:sticky;top:0;z-index:50;
+  padding-top:env(safe-area-inset-top);
   backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
   background:linear-gradient(180deg,rgba(12,16,22,.92),rgba(12,16,22,.72));
   border-bottom:1px solid rgba(217,179,106,.18);
@@ -261,7 +262,7 @@ header{
 
 /* ---------- BOTTOM NAV ---------- */
 .bnav{
-  position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:55;
+  position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:55;
   display:flex;gap:4px;padding:7px;border-radius:22px;
   background:rgba(15,19,27,.86);backdrop-filter:blur(18px);
   border:1px solid rgba(217,179,106,.25);box-shadow:0 16px 40px -12px rgba(0,0,0,.7);

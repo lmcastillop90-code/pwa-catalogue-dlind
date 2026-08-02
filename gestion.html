@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#8f1230">
 <title>DLIND — Gestión</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
 :root{
   --red:#a41d3b; --red-dark:#7c1029; --gold:#d9b36a; --gold-soft:#e8cf9c;
@@ -23,7 +27,7 @@ body{
 }
 .hidden{display:none !important}
 /* header */
-header{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);background:linear-gradient(180deg,rgba(12,16,22,.94),rgba(12,16,22,.75));border-bottom:1px solid rgba(217,179,106,.18)}
+header{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);background:linear-gradient(180deg,rgba(12,16,22,.94),rgba(12,16,22,.75));border-bottom:1px solid rgba(217,179,106,.18);padding-top:env(safe-area-inset-top)}
 .header-in{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:12px 18px}
 .logo-oval{width:78px;height:38px;flex:none;border-radius:50%;background:radial-gradient(circle at 35% 30%, #c22548, var(--red) 55%, var(--red-dark));border:2px solid #fff;outline:2.5px solid var(--red-dark);display:flex;align-items:center;justify-content:center}
 .logo-oval span{font-style:italic;font-weight:900;color:#fff;font-size:15px;letter-spacing:.4px}
@@ -245,7 +249,8 @@ header{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);background:li
 .qrow .btn{flex:1}
 .btn.ghost{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);color:#fff}
 /* toast */
-.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);z-index:200;background:rgba(20,26,36,.96);border:1px solid rgba(217,179,106,.4);color:#fff;padding:13px 22px;border-radius:14px;font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;transition:var(--transition);max-width:88vw;text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(26px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);z-index:200;background:rgba(20,26,36,.96);border:1px solid rgba(217,179,106,.4);color:#fff;padding:13px 22px;border-radius:14px;font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;transition:var(--transition);max-width:88vw;text-align:center}
+.toast.show{pointer-events:auto}
 .toast.show{opacity:1;transform:translateX(-50%)}
 .proto-tag{position:fixed;top:10px;right:10px;z-index:300;font-size:9px;font-weight:800;letter-spacing:1.5px;background:rgba(217,179,106,.15);color:var(--gold);border:1px solid rgba(217,179,106,.4);padding:4px 10px;border-radius:99px;text-transform:uppercase}
 .sync-note{font-size:11px;color:var(--muted);text-align:center;margin-top:18px}
