@@ -365,7 +365,7 @@ footer b{color:var(--gold)}
   will-change:transform;user-select:none;-webkit-user-drag:none;
 }
 .zoom-close{
-  position:absolute;top:18px;right:18px;z-index:5;width:44px;height:44px;border-radius:50%;
+  position:absolute;top:calc(18px + env(safe-area-inset-top));right:18px;z-index:5;width:44px;height:44px;border-radius:50%;
   background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);color:#fff;font-size:19px;
   display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--transition);
 }
@@ -413,7 +413,7 @@ footer b{color:var(--gold)}
 .vplayer video{max-width:96vw;max-height:88vh;border-radius:18px;box-shadow:0 30px 80px -20px rgba(0,0,0,.9);background:#000}
 .vplayer .zoom-close{z-index:6}
 .vplayer-brand{
-  position:absolute;top:20px;left:20px;z-index:5;display:flex;align-items:center;gap:10px;
+  position:absolute;top:calc(20px + env(safe-area-inset-top));left:20px;z-index:5;display:flex;align-items:center;gap:10px;
   font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--gold);
 }
 @media(max-width:640px){
@@ -525,7 +525,7 @@ footer b{color:var(--gold)}
 <div class="vplayer" id="vplayer">
   <div class="vplayer-brand"><span style="font-style:italic;font-weight:900;font-size:14px;color:#fff">DLIND</span> Rendimiento comprobado</div>
   <video id="vpVideo" controls playsinline preload="none"></video>
-  <button class="zoom-close" style="position:absolute;top:18px;right:18px" onclick="closeVideo()">✕</button>
+  <button class="zoom-close" style="position:absolute;top:calc(18px + env(safe-area-inset-top));right:18px" onclick="closeVideo()">✕</button>
 </div>
 
 <script>
@@ -753,7 +753,7 @@ function openSheet(id){
         <span class="d-tag">${p.cat.charAt(0).toUpperCase()+p.cat.slice(1)}</span>
       </div>
       <div class="d-price-row">
-        <div class="d-price">$${p.price}<small> USD + IVA</small></div>
+        <div class="d-price">$${p.price}<small> USD</small></div>
         <div class="d-stock ${st.cls}">● ${st.txt}${p.stock>0?` · ${p.stock} unid.`:""}</div>
       </div>
       <p class="d-desc">${p.desc}</p>
@@ -763,15 +763,6 @@ function openSheet(id){
       </div>
       ${p.variants?`<div class="specs" style="border:none;margin-top:16px"><h4 style="background:none;border:none;padding:0 0 10px">Presentaciones disponibles</h4></div>
       <div class="variants" style="margin-top:0">${p.variants.map((v,i)=>`<span class="variant ${i===0?'on':''}" onclick="pickVariant(this)">${v}</span>`).join("")}</div>`:""}
-      <div class="cta-row">
-        <button class="cta wa" onclick="toast('💬 En producción: abre WhatsApp con el producto pre-cargado para cotizar')">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 01-12.4 7.5L3 21l2-5.6A8.5 8.5 0 1121 11.5z"/></svg>
-          Cotizar por WhatsApp
-        </button>
-        <button class="cta ghost" onclick="toast('📤 En producción: envía la ficha del producto al WhatsApp de tu cliente')">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="6" cy="12" r="2.6"/><circle cx="17.5" cy="5.5" r="2.6"/><circle cx="17.5" cy="18.5" r="2.6"/><path d="M8.3 10.8l6.9-4M8.3 13.2l6.9 4"/></svg>
-        </button>
-      </div>
     </div>`;
 
   $("#overlay").classList.add("open");
