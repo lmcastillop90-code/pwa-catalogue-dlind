@@ -11,7 +11,9 @@ module.exports = async (req, res) => {
     if (!type || !title) return res.status(400).json({ error: 'Faltan type/title' });
 
     const db = admin.firestore();
-    // stock_alert → solo admin y gerentes · restock y broadcast → todo el equipo
+    // stock_alert (por agotarse) → solo admin y gerentes
+    // stock_out (agotado), restock y broadcast → todo el equipo (los vendedores
+    // deben enterarse al instante de qué no pueden ofrecer y qué volvió a llegar)
     const roles = type === 'stock_alert' ? ['admin', 'gerente'] : ['admin', 'gerente', 'vendedor'];
     const snap = await db.collection('usuarios')
       .where('activo', '==', true).where('rol', 'in', roles).get();
@@ -31,7 +33,7 @@ module.exports = async (req, res) => {
           icon: '/icons/icon-192.png', badge: '/icons/icon-192.png',
           tag: type, renotify: true,
         },
-        fcmOptions: { link: type === 'stock_alert' ? '/gestion.html' : '/' },
+        fcmOptions: { link: (type === 'stock_alert') ? '/gestion.html' : '/' },
       },
     });
 

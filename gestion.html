@@ -921,7 +921,7 @@ function checkAlert(s){
   s._prevCls = undefined;
   if(prev===now) return;  // solo notifica al CRUZAR de estado (evita spam en ajustes repetidos)
   if(now==="out")
-    api("/api/notify",{type:"stock_alert",title:"🔴 Producto agotado",body:`${s.brand} ${s.name} (${s.sub}) se agotó — reponer`}).catch(()=>{});
+    api("/api/notify",{type:"stock_out",title:"🔴 Producto agotado",body:`${s.brand} ${s.name} (${s.sub}) — no ofrecer hasta nueva reposición`}).catch(()=>{});
   else if(now==="low")
     api("/api/notify",{type:"stock_alert",title:"⚠ Stock por agotarse",body:`${s.brand} ${s.name}: quedan ${s.qty} (mínimo ${s.min})`}).catch(()=>{});
   else if(now==="ok" && (prev==="out"||prev==="low"))
