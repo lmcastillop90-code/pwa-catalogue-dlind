@@ -25,6 +25,7 @@ body{
     radial-gradient(900px 500px at -10% 30%, rgba(164,29,59,.14), transparent 55%),
     linear-gradient(160deg,#0c1016 0%, #131019 55%, #1a0c12 100%);
 }
+html,body{overscroll-behavior-y:contain}  /* desactiva el pull-to-refresh nativo de Android: solo actúa el nuestro */
 .hidden{display:none !important}
 /* header */
 header{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);background:linear-gradient(180deg,rgba(12,16,22,.94),rgba(12,16,22,.75));border-bottom:1px solid rgba(217,179,106,.18);padding-top:env(safe-area-inset-top)}
@@ -284,7 +285,7 @@ header{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);background:li
 #numodal select option{background:#1c2432;color:#fff}
 /* pull-to-refresh */
 .ptr{
-  position:fixed;top:calc(env(safe-area-inset-top) - 54px);left:50%;z-index:90;
+  position:fixed;top:-64px;left:50%;z-index:90;
   width:46px;height:46px;margin-left:-23px;border-radius:50%;
   background:linear-gradient(160deg,var(--card2),var(--card));
   border:1.5px solid rgba(217,179,106,.5);box-shadow:0 10px 26px -8px rgba(0,0,0,.7);
@@ -1183,6 +1184,15 @@ resetIdle();
   const THRESHOLD = 78;      // px de arrastre para disparar
   let startY = 0, pulling = false, armed = false;
   const ptr = () => $("#ptr");
+  // margen del notch (se mide una vez, para que el ícono aparezca DEBAJO de la barra del sistema)
+  let SAT = 0;
+  window.addEventListener("load", ()=>{
+    const d=document.createElement("div");
+    d.style.cssText="position:fixed;top:0;padding-top:env(safe-area-inset-top)";
+    document.body.appendChild(d);
+    SAT = parseFloat(getComputedStyle(d).paddingTop)||0;
+    d.remove();
+  });
   document.addEventListener("touchstart", e=>{
     if(!session) return;
     if(window.scrollY > 2) return;                                   // solo desde el tope
@@ -1194,7 +1204,7 @@ resetIdle();
     const dy = e.touches[0].clientY - startY;
     if(dy <= 0){ ptr().style.transform=""; return; }
     const pull = Math.min(dy*0.5, 110);                              // efecto elástico
-    ptr().style.transform = `translateY(${pull+54}px)`;
+    ptr().style.transform = `translateY(${pull+64+SAT}px)`;
     ptr().querySelector(".ico").style.transform = `rotate(${dy*1.6}deg)`;
     armed = pull >= THRESHOLD*0.5 + 20;
     ptr().classList.toggle("armed", armed);
@@ -1205,7 +1215,7 @@ resetIdle();
     const el = ptr();
     if(armed){
       el.classList.add("spin");
-      el.style.transform = "translateY(96px)";
+      el.style.transform = `translateY(${106+SAT}px)`;
       setTimeout(()=>{
         listOrder = null;
         if(!$("#viewStock").classList.contains("hidden")) renderStock();
