@@ -1,5 +1,5 @@
 // Gestión de usuarios: crear, activar/desactivar, cambiar PIN.
-// Requiere permiso 'gestionar_usuarios' (o rol admin).
+// Requiere permiso 'gestionar_usuarios' (o rol admin)....
 const { admin, requireUser } = require('./_admin');
 
 const DEFAULT_PERMS = {
