@@ -22,7 +22,22 @@ module.exports = async (req, res) => {
       if (rol === 'admin' && caller.rol !== 'admin')
         return res.status(403).json({ error: 'Solo un admin crea admins' });
       const email = `${slug.toLowerCase().replace(/[^a-z0-9]/g, '')}@dlind.local`;
-      const user = await admin.auth().createUser({ email, password: `dlind-${pin}`, displayName: nombre });
+      let user;
+      try {
+        user = await admin.auth().createUser({ email, password: `dlind-${pin}`, displayName: nombre });
+      } catch (err) {
+        if (err.code === 'auth/email-already-exists') {
+          // ¿Es un acceso huérfano de un usuario ya eliminado? → auto-reparar
+          const orphan = await admin.auth().getUserByEmail(email);
+          const doc = await db.doc(`usuarios/${orphan.uid}`).get();
+          if (!doc.exists) {
+            await admin.auth().deleteUser(orphan.uid);
+            user = await admin.auth().createUser({ email, password: `dlind-${pin}`, displayName: nombre });
+          } else {
+            return res.status(400).json({ error: `El usuario "${slug}" ya existe` });
+          }
+        } else { throw err; }
+      }
       const perfil = {
         nombre, rol, activo: true, slug: slug.toLowerCase(),
         permisos: DEFAULT_PERMS[rol], fcmTokens: [],
@@ -55,7 +70,9 @@ module.exports = async (req, res) => {
       if (!target.exists) return res.status(404).json({ error: 'No existe' });
       if (target.data().rol === 'admin' && caller.rol !== 'admin')
         return res.status(403).json({ error: 'Solo un admin elimina a un admin' });
-      await admin.auth().deleteUser(uid).catch(() => {});
+      // borrar el acceso PRIMERO; si falla, no dejamos huérfanos
+      try { await admin.auth().deleteUser(uid); }
+      catch (err) { if (err.code !== 'auth/user-not-found') throw err; }
       await db.doc(`usuarios/${uid}`).delete();
       await db.doc(`directorio/${uid}`).delete();
       return res.json({ ok: true });

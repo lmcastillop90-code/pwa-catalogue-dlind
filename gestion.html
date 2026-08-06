@@ -1090,7 +1090,11 @@ async function changePin(uid,nombre){
   try{ await api("/api/users",{action:"setpin",uid,pin:p}); toast("🔑 PIN actualizado"); }
   catch(e){ toast("⚠ "+e.message); }
 }
-function openNewUser(){ $("#numodal").classList.add("open"); }
+function openNewUser(){
+  // el formulario siempre abre limpio
+  $("#nuName").value=""; $("#nuSlug").value=""; $("#nuPin").value=""; $("#nuRol").value="vendedor";
+  $("#numodal").classList.add("open");
+}
 function closeNewUser(){ $("#numodal").classList.remove("open"); }
 let creatingUser=false;
 async function saveNewUser(){
