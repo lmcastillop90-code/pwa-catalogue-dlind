@@ -476,9 +476,9 @@ header{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);background:li
   <div class="qcard" style="text-align:left">
     <h3 style="text-align:center">Nuevo usuario</h3>
     <p style="text-align:center">Se crea al instante y ya puede entrar con su PIN</p>
-    <div class="field"><label>Nombre</label><input type="text" id="nuName" placeholder="Ej: Carlos Pérez" style="font-size:16px;text-align:left"></div>
-    <div class="field"><label>Usuario (una palabra)</label><input type="text" id="nuSlug" placeholder="Ej: carlos" style="font-size:16px;text-align:left"></div>
-    <div class="field"><label>PIN (4-6 dígitos)</label><input type="number" id="nuPin" placeholder="Ej: 2580" style="font-size:16px;text-align:left"></div>
+    <div class="field"><label>Nombre</label><input type="text" id="nuName" placeholder="Ej: Carlos Pérez" maxlength="40" style="font-size:16px;text-align:left"></div>
+    <div class="field"><label>Usuario (una palabra)</label><input type="text" id="nuSlug" placeholder="Ej: carlos" maxlength="15" autocapitalize="none" style="font-size:16px;text-align:left"></div>
+    <div class="field"><label>PIN (4 a 6 números)</label><input type="text" inputmode="numeric" pattern="[0-9]*" id="nuPin" placeholder="Ej: 2580" maxlength="6" style="font-size:16px;text-align:left;letter-spacing:3px"></div>
     <div class="field"><label>Rol</label>
       <select id="nuRol"><option value="vendedor">Vendedor</option><option value="gerente">Gerente</option><option value="admin">Admin</option></select>
     </div>
@@ -642,7 +642,11 @@ onAuthStateChanged(auth, async user=>{
     session=null; subs.forEach(u=>u()); subs=[];
     $("#appView").classList.add("hidden");
     $("#loginView").classList.remove("hidden");
-    loadDirectorio();
+    /* filtros en vivo de los campos del modal de usuario */
+$("#nuPin").addEventListener("input", e=>{ e.target.value = e.target.value.replace(/\D/g,"").slice(0,6); });
+$("#nuSlug").addEventListener("input", e=>{ e.target.value = e.target.value.toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,15); });
+
+loadDirectorio();
     return;
   }
   try{
@@ -1266,6 +1270,10 @@ if("serviceWorker" in navigator && location.protocol!=="file:")
 Object.assign(window,{pinKey,pinBack,pinClear,pinSubmit,manualRefresh,doLogin,doLogout,showTab,stockHome,openStockCat,openStockState,
   clearStateFilter,setListCat,resort,listState,sendBroadcast,adj,openQm,closeQm,saveQm,togglePerms,setPerm,toggleUser,changePin,
   openNewUser,closeNewUser,saveNewUser,deleteUser,setHistDay,setHistUser,toast,seedStock,renderStock});
+
+/* filtros en vivo de los campos del modal de usuario */
+$("#nuPin").addEventListener("input", e=>{ e.target.value = e.target.value.replace(/\D/g,"").slice(0,6); });
+$("#nuSlug").addEventListener("input", e=>{ e.target.value = e.target.value.toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,15); });
 
 loadDirectorio();
 </script>
