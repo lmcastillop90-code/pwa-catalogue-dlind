@@ -26,7 +26,8 @@ body{
     radial-gradient(900px 500px at -10% 30%, rgba(164,29,59,.14), transparent 55%),
     linear-gradient(160deg,#0c1016 0%, #131019 55%, #1a0c12 100%);
 }
-html,body{overscroll-behavior-y:contain}
+html,body{overscroll-behavior-y:contain;overflow-anchor:none}
+#viewStock .search{scroll-margin-top:calc(76px + env(safe-area-inset-top))}
 select option{background:#1c2432;color:#fff}
 input[type="search"]::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
 .hidden{display:none !important}
@@ -1208,7 +1209,15 @@ async function setupPush(){
 let tmr;
 $("#sq").addEventListener("input",e=>{
   $("#sqClear").classList.toggle("vis", e.target.value.length>0);
-  clearTimeout(tmr);tmr=setTimeout(()=>{listOrder=null;renderStock();},150);
+  clearTimeout(tmr);
+  tmr=setTimeout(()=>{
+    listOrder=null; renderStock();
+    // mantener el buscador y sus resultados en pantalla (evita el salto de scroll en móvil)
+    requestAnimationFrame(()=>{
+      const sb = $("#sq").closest(".search");
+      if(sb) sb.scrollIntoView({block:"start", behavior:"auto"});
+    });
+  },150);
 });
 function clearSearch(){
   $("#sq").value=""; $("#sqClear").classList.remove("vis");
