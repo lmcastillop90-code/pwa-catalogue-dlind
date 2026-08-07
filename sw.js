@@ -1,5 +1,5 @@
 /* DLIND Catálogo — Service Worker (offline-first) */
-const CACHE = 'dlind-catalogo-v4';
+const CACHE = 'dlind-catalogo-v5';
 const PRECACHE = [
   './',
   './index.html',
@@ -104,6 +104,7 @@ self.addEventListener('push', e => {
     icon: n.icon || './icons/icon-192.png',
     badge: './icons/icon-192.png',
     tag: n.tag || 'dlind',
+    renotify: true,   // misma etiqueta = reemplaza el aviso anterior PERO vuelve a sonar y mostrarse
     data: { link: (d.fcmOptions && d.fcmOptions.link) || (d.data && d.data.link) || './gestion.html' }
   }));
 });
