@@ -1211,16 +1211,17 @@ $("#sq").addEventListener("input",e=>{
   $("#sqClear").classList.toggle("vis", e.target.value.length>0);
   clearTimeout(tmr);
   tmr=setTimeout(()=>{
+    const y = window.scrollY;                      // 1) recordar posición exacta
+    const sl = $("#slist");
+    if(e.target.value) sl.style.minHeight = sl.offsetHeight + "px";  // 2) congelar altura mientras se filtra
+    else sl.style.minHeight = "";
     listOrder=null; renderStock();
-    // mantener el buscador y sus resultados en pantalla (evita el salto de scroll en móvil)
-    requestAnimationFrame(()=>{
-      const sb = $("#sq").closest(".search");
-      if(sb) sb.scrollIntoView({block:"start", behavior:"auto"});
-    });
+    window.scrollTo(0, y);                         // 3) restaurar posición — cero saltos
   },150);
 });
 function clearSearch(){
   $("#sq").value=""; $("#sqClear").classList.remove("vis");
+  $("#slist").style.minHeight = "";
   listOrder=null; renderStock(); $("#sq").focus();
 }
 (function(){
