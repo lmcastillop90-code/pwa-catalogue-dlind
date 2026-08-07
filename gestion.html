@@ -25,7 +25,7 @@ body{
     radial-gradient(900px 500px at -10% 30%, rgba(164,29,59,.14), transparent 55%),
     linear-gradient(160deg,#0c1016 0%, #131019 55%, #1a0c12 100%);
 }
-html,body{overscroll-behavior-y:contain}  /* desactiva el pull-to-refresh nativo de Android: solo actúa el nuestro */
+html,body{overscroll-behavior-y:contain}
 .hidden{display:none !important}
 /* header */
 header{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);background:linear-gradient(180deg,rgba(12,16,22,.94),rgba(12,16,22,.75));border-bottom:1px solid rgba(217,179,106,.18);padding-top:env(safe-area-inset-top)}
@@ -276,29 +276,37 @@ header{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);background:li
 .qrow{display:flex;gap:10px}
 .qrow .btn{flex:1}
 .btn.ghost{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);color:#fff}
-/* inputs del modal nuevo usuario: contraste alto */
-#numodal input,#numodal select{
-  background:#10151d !important;border:1.5px solid rgba(217,179,106,.45) !important;
-  color:#fff !important;font-size:16px !important;
-}
+/* inputs del modal nuevo usuario */
+#numodal input,#numodal select{background:#10151d !important;border:1.5px solid rgba(217,179,106,.45) !important;color:#fff !important;font-size:16px !important}
 #numodal input::placeholder{color:#8892a0}
 #numodal select option{background:#1c2432;color:#fff}
-/* pull-to-refresh */
-.ptr{
-  position:fixed;top:-64px;left:50%;z-index:90;
-  width:46px;height:46px;margin-left:-23px;border-radius:50%;
-  background:linear-gradient(160deg,var(--card2),var(--card));
-  border:1.5px solid rgba(217,179,106,.5);box-shadow:0 10px 26px -8px rgba(0,0,0,.7);
-  display:flex;align-items:center;justify-content:center;font-size:19px;
-  transition:transform .25s cubic-bezier(.22,.68,.35,1);will-change:transform;
-}
-.ptr .ico{transition:transform .2s linear}
-.ptr.armed{border-color:var(--gold)}
-.ptr.spin .ico{animation:ptrSpin .7s linear infinite}
-@keyframes ptrSpin{to{transform:rotate(360deg)}}
 /* botón refrescar */
 .refresh-ico{display:inline-block;transition:transform .6s cubic-bezier(.22,.68,.35,1)}
 .spinning .refresh-ico{transform:rotate(360deg)}
+/* pull-to-refresh */
+.ptr{position:fixed;top:-64px;left:50%;z-index:90;width:46px;height:46px;margin-left:-23px;border-radius:50%;
+  background:linear-gradient(160deg,var(--card2),var(--card));border:1.5px solid rgba(217,179,106,.5);
+  box-shadow:0 10px 26px -8px rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;font-size:19px;
+  transition:transform .25s cubic-bezier(.22,.68,.35,1);will-change:transform}
+.ptr .ico{transition:transform .2s linear;display:inline-block}
+.ptr.armed{border-color:var(--gold)}
+.ptr.spin .ico{animation:ptrSpin .7s linear infinite}
+@keyframes ptrSpin{to{transform:rotate(360deg)}}
+/* notificación en primer plano (estilo WhatsApp Web) */
+.inapp{position:fixed;top:calc(12px + env(safe-area-inset-top));left:50%;transform:translateX(-50%) translateY(-130%);
+  z-index:300;width:min(420px,92vw);cursor:pointer;background:linear-gradient(160deg,#1c2432,#161d29);
+  border:1px solid rgba(217,179,106,.5);border-radius:16px;padding:14px 18px;
+  box-shadow:0 18px 50px -12px rgba(0,0,0,.85);transition:transform .38s cubic-bezier(.22,.68,.35,1);
+  display:flex;gap:12px;align-items:flex-start}
+.inapp.show{transform:translateX(-50%) translateY(0)}
+.inapp .ni-ico{flex:none;width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 30%, #c22548, var(--red) 55%, var(--red-dark));border:1.5px solid #fff;display:flex;align-items:center;justify-content:center;font-style:italic;font-weight:900;font-size:10px;color:#fff}
+.inapp .ni-txt b{display:block;font-size:13.5px;margin-bottom:2px}
+.inapp .ni-txt span{font-size:12.5px;color:var(--muted);line-height:1.45}
+/* X para limpiar el buscador */
+.sx{flex:none;width:26px;height:26px;border-radius:50%;display:none;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.12);color:#fff;font-size:13px;font-weight:800;cursor:pointer;transition:var(--transition)}
+.sx:hover{background:var(--red)}
+.sx.vis{display:flex}
 /* toast */
 .toast{position:fixed;left:50%;bottom:calc(26px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);z-index:200;background:rgba(20,26,36,.96);border:1px solid rgba(217,179,106,.4);color:#fff;padding:13px 22px;border-radius:14px;font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;transition:var(--transition);max-width:88vw;text-align:center}
 .toast.show{pointer-events:auto}
@@ -433,6 +441,7 @@ header{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);background:li
       <div class="search">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="opacity:.55"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
         <input id="sq" type="search" placeholder="Buscar producto o código…">
+        <span class="sx" id="sqClear" onclick="clearSearch()">✕</span>
       </div>
       <div class="slist" id="slist"></div>
       <div class="sync-note">● <b>Sincronizado</b> · Los cambios llegan a todos los equipos automáticamente</div>
@@ -470,8 +479,12 @@ header{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);background:li
   </div>
 </div>
 
+<div class="inapp" id="inapp" onclick="this.classList.remove('show')">
+  <div class="ni-ico">DLIND</div>
+  <div class="ni-txt"><b id="niTitle"></b><span id="niBody"></span></div>
+</div>
 
-<!-- modal nuevo usuario -->
+
 <div class="qmodal" id="numodal">
   <div class="qcard" style="text-align:left">
     <h3 style="text-align:center">Nuevo usuario</h3>
@@ -503,7 +516,7 @@ import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager
          doc, collection, onSnapshot, getDoc, getDocs, setDoc, updateDoc, addDoc,
          query, orderBy, limit, where, serverTimestamp, increment, arrayUnion }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getMessaging, getToken }
+import { getMessaging, getToken, onMessage }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
 const firebaseConfig = {
@@ -590,10 +603,10 @@ async function api(path, body){
   return j;
 }
 
-/* ===== PIN pad (4 a 6 dígitos, confirma con ✓) ===== */
+/* ===== PIN pad ===== */
 let pin = "";
 function pinRender(){
-  const total = Math.max(4, pin.length);          // los puntos crecen si el PIN es de 5-6
+  const total = Math.max(4, pin.length);
   const box = $("#pinDots");
   if(box.children.length !== total)
     box.innerHTML = Array.from({length:total},()=> "<i></i>").join("");
@@ -642,8 +655,7 @@ onAuthStateChanged(auth, async user=>{
     session=null; subs.forEach(u=>u()); subs=[];
     $("#appView").classList.add("hidden");
     $("#loginView").classList.remove("hidden");
-    /* filtros en vivo de los campos del modal de usuario */
-$("#nuPin").addEventListener("input", e=>{ e.target.value = e.target.value.replace(/\D/g,"").slice(0,6); });
+    $("#nuPin").addEventListener("input", e=>{ e.target.value = e.target.value.replace(/\D/g,"").slice(0,6); });
 $("#nuSlug").addEventListener("input", e=>{ e.target.value = e.target.value.toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,15); });
 
 loadDirectorio();
@@ -946,15 +958,13 @@ async function flush(code){
   }catch(e){ toast("⚠ Sin conexión — el cambio se sincronizará automáticamente"); }
   scheduleReorder();
 }
-/* re-ordenar solo cuando el usuario terminó de ajustar (5 s de calma) — pedido del cliente */
 let reorderTmr;
 function scheduleReorder(){
   clearTimeout(reorderTmr);
   reorderTmr = setTimeout(()=>{
-    if(Object.keys(pend).length) return;                       // sigue ajustando
-    if($("#viewStock").classList.contains("hidden")) return;   // ya no está en la lista
-    listOrder = null;                                          // recalcular con el criterio elegido
-    renderStock();
+    if(Object.keys(pend).length) return;
+    if($("#viewStock").classList.contains("hidden")) return;
+    listOrder = null; renderStock();
   }, 5000);
 }
 async function undo(code,delta){
@@ -971,7 +981,7 @@ function checkAlert(s){
   s._prevCls = undefined;
   if(prev===now) return;  // solo notifica al CRUZAR de estado (evita spam en ajustes repetidos)
   if(now==="out")
-    api("/api/notify",{type:"stock_alert",title:"🔴 Producto agotado",body:`${s.brand} ${s.name} (${s.sub}) se agotó — reponer`}).catch(()=>{});
+    api("/api/notify",{type:"stock_out",title:"🔴 Producto agotado",body:`${s.brand} ${s.name} (${s.sub}) — no ofrecer hasta nueva reposición`}).catch(()=>{});
   else if(now==="low")
     api("/api/notify",{type:"stock_alert",title:"⚠ Stock por agotarse",body:`${s.brand} ${s.name}: quedan ${s.qty} (mínimo ${s.min})`}).catch(()=>{});
   else if(now==="ok" && (prev==="out"||prev==="low"))
@@ -999,6 +1009,12 @@ function openQm(code){
   setTimeout(()=>$("#qmQty").select(),150);
 }
 function closeQm(){ $("#qmodal").classList.remove("open"); }
+/* Enter en el modal de cantidad = Guardar (teclado físico en desktop, "Intro" en móvil) */
+["qmQty","qmMin"].forEach(id=>{
+  $("#"+id).addEventListener("keydown", e=>{
+    if(e.key==="Enter"){ e.preventDefault(); saveQm(); }
+  });
+});
 async function saveQm(){
   const s=STOCK.find(x=>x.code===qmCode);
   const nq=Math.max(0,parseInt($("#qmQty").value||0)), nm=Math.max(0,parseInt($("#qmMin").value||0));
@@ -1171,6 +1187,10 @@ async function setupPush(){
     const token = await getToken(messaging,{vapidKey:VAPID_KEY, serviceWorkerRegistration:reg});
     if(token){
       await updateDoc(doc(db,"usuarios",session.uid),{fcmTokens:arrayUnion(token)});
+      onMessage(messaging, p=>{
+        const n = p.notification || (p.data||{});
+        showInApp(n.title||"DLIND", n.body||"");
+      });
       toast("🔔 Notificaciones activadas en este equipo");
     }
   }catch(e){ toast("⚠ No se pudieron activar las notificaciones: "+(e.message||e)); }
@@ -1178,72 +1198,54 @@ async function setupPush(){
 
 /* ===== varios ===== */
 let tmr;
-$("#sq").addEventListener("input",()=>{clearTimeout(tmr);tmr=setTimeout(()=>{listOrder=null;renderStock();},150);});
-document.addEventListener("keydown",e=>{
-  if(e.key==="Escape"){ if($("#qmodal").classList.contains("open")) closeQm(); else if($("#numodal")?.classList.contains("open")) closeNewUser(); }
+$("#sq").addEventListener("input",e=>{
+  $("#sqClear").classList.toggle("vis", e.target.value.length>0);
+  clearTimeout(tmr);tmr=setTimeout(()=>{listOrder=null;renderStock();},150);
 });
-/* auto-bloqueo por inactividad (20 min) */
-let idleTmr;
-function resetIdle(){ clearTimeout(idleTmr); if(session) idleTmr=setTimeout(()=>{toast("🔒 Sesión bloqueada por inactividad"); signOut(auth);},20*60*1000); }
-["pointerdown","keydown","touchstart"].forEach(ev=>document.addEventListener(ev,resetIdle,{passive:true}));
-resetIdle();
-/* ===== pull-to-refresh: jalar hacia abajo desde el tope de la página ===== */
+function clearSearch(){
+  $("#sq").value=""; $("#sqClear").classList.remove("vis");
+  listOrder=null; renderStock(); $("#sq").focus();
+}
 (function(){
-  const THRESHOLD = 78;      // px de arrastre para disparar
-  let startY = 0, pulling = false, armed = false;
-  const ptr = () => $("#ptr");
-  // margen del notch (se mide una vez, para que el ícono aparezca DEBAJO de la barra del sistema)
-  let SAT = 0;
-  window.addEventListener("load", ()=>{
-    const d=document.createElement("div");
+  const THRESHOLD=78; let startY=0,pulling=false,armed=false,SAT=0;
+  const ptr=()=>$("#ptr");
+  window.addEventListener("load",()=>{const d=document.createElement("div");
     d.style.cssText="position:fixed;top:0;padding-top:env(safe-area-inset-top)";
-    document.body.appendChild(d);
-    SAT = parseFloat(getComputedStyle(d).paddingTop)||0;
-    d.remove();
-  });
-  document.addEventListener("touchstart", e=>{
+    document.body.appendChild(d);SAT=parseFloat(getComputedStyle(d).paddingTop)||0;d.remove();});
+  document.addEventListener("touchstart",e=>{
     if(!session) return;
-    if(window.scrollY > 2) return;                                   // solo desde el tope
-    if(document.querySelector(".qmodal.open")) return;               // no con modales abiertos
-    startY = e.touches[0].clientY; pulling = true; armed = false;
+    if(window.scrollY>2) return;
+    if(document.querySelector(".qmodal.open")) return;
+    startY=e.touches[0].clientY; pulling=true; armed=false;
   },{passive:true});
-  document.addEventListener("touchmove", e=>{
+  document.addEventListener("touchmove",e=>{
     if(!pulling) return;
-    const dy = e.touches[0].clientY - startY;
-    if(dy <= 0){ ptr().style.transform=""; return; }
-    const pull = Math.min(dy*0.5, 110);                              // efecto elástico
-    ptr().style.transform = `translateY(${pull+64+SAT}px)`;
-    ptr().querySelector(".ico").style.transform = `rotate(${dy*1.6}deg)`;
-    armed = pull >= THRESHOLD*0.5 + 20;
-    ptr().classList.toggle("armed", armed);
+    const dy=e.touches[0].clientY-startY;
+    if(dy<=0){ ptr().style.transform=""; return; }
+    const pull=Math.min(dy*0.5,110);
+    ptr().style.transform=`translateY(${pull+64+SAT}px)`;
+    ptr().querySelector(".ico").style.transform=`rotate(${dy*1.6}deg)`;
+    armed = pull >= THRESHOLD*0.5+20;
+    ptr().classList.toggle("armed",armed);
   },{passive:true});
-  document.addEventListener("touchend", ()=>{
-    if(!pulling) return;
-    pulling = false;
-    const el = ptr();
+  document.addEventListener("touchend",()=>{
+    if(!pulling) return; pulling=false;
+    const el=ptr();
     if(armed){
       el.classList.add("spin");
-      el.style.transform = `translateY(${106+SAT}px)`;
+      el.style.transform=`translateY(${106+SAT}px)`;
       setTimeout(()=>{
-        listOrder = null;
+        listOrder=null;
         if(!$("#viewStock").classList.contains("hidden")) renderStock();
         if(!$("#viewStockHome").classList.contains("hidden")) renderStockMenu();
         if(!$("#viewUsers").classList.contains("hidden")) renderUsers();
         if(!$("#viewHist").classList.contains("hidden")) renderHist();
-        el.classList.remove("spin","armed");
-        el.style.transform = "";
-        toast(navigator.onLine ? "✓ Actualizado — los datos llegan solos en tiempo real"
-                               : "📡 Sin conexión — mostrando los últimos datos sincronizados");
-      }, 750);
-    } else {
-      el.classList.remove("armed");
-      el.style.transform = "";
-      el.querySelector(".ico").style.transform = "";
-    }
+        el.classList.remove("spin","armed"); el.style.transform="";
+        toast(navigator.onLine?"✓ Actualizado — los datos llegan solos en tiempo real":"📡 Sin conexión — mostrando los últimos datos sincronizados");
+      },750);
+    } else { el.classList.remove("armed"); el.style.transform=""; el.querySelector(".ico").style.transform=""; }
   },{passive:true});
 })();
-
-/* refrescar manual (los datos ya llegan solos en tiempo real; esto da la señal visual que la gente espera) */
 function manualRefresh(){
   const btn=$("#btnRefresh");
   btn.classList.add("spinning");
@@ -1254,10 +1256,25 @@ function manualRefresh(){
   if(!$("#viewHist").classList.contains("hidden")) renderHist();
   setTimeout(()=>{
     btn.classList.remove("spinning");
-    toast(navigator.onLine ? "✓ Todo al día — los datos se actualizan solos en tiempo real"
-                           : "📡 Sin conexión — mostrando los últimos datos sincronizados");
-  }, 700);
+    toast(navigator.onLine?"✓ Todo al día — los datos se actualizan solos en tiempo real":"📡 Sin conexión — mostrando los últimos datos sincronizados");
+  },700);
 }
+let inappTmr;
+function showInApp(title, body){
+  $("#niTitle").textContent = title;
+  $("#niBody").textContent = body;
+  $("#inapp").classList.add("show");
+  clearTimeout(inappTmr);
+  inappTmr = setTimeout(()=>$("#inapp").classList.remove("show"), 6500);
+}
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){ if($("#qmodal").classList.contains("open")) closeQm(); else if($("#numodal")?.classList.contains("open")) closeNewUser(); }
+});
+/* auto-bloqueo por inactividad (20 min) */
+let idleTmr;
+function resetIdle(){ clearTimeout(idleTmr); if(session) idleTmr=setTimeout(()=>{toast("🔒 Sesión bloqueada por inactividad"); signOut(auth);},20*60*1000); }
+["pointerdown","keydown","touchstart"].forEach(ev=>document.addEventListener(ev,resetIdle,{passive:true}));
+resetIdle();
 /* indicador online/offline */
 function netUI(){ const on=navigator.onLine;
   const el=document.querySelector(".sync-note");
@@ -1271,11 +1288,10 @@ if("serviceWorker" in navigator && location.protocol!=="file:")
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 
 /* exponer handlers a los onclick del HTML */
-Object.assign(window,{pinKey,pinBack,pinClear,pinSubmit,manualRefresh,doLogin,doLogout,showTab,stockHome,openStockCat,openStockState,
+Object.assign(window,{pinKey,pinBack,pinClear,pinSubmit,manualRefresh,clearSearch,doLogin,doLogout,showTab,stockHome,openStockCat,openStockState,
   clearStateFilter,setListCat,resort,listState,sendBroadcast,adj,openQm,closeQm,saveQm,togglePerms,setPerm,toggleUser,changePin,
   openNewUser,closeNewUser,saveNewUser,deleteUser,setHistDay,setHistUser,toast,seedStock,renderStock});
 
-/* filtros en vivo de los campos del modal de usuario */
 $("#nuPin").addEventListener("input", e=>{ e.target.value = e.target.value.replace(/\D/g,"").slice(0,6); });
 $("#nuSlug").addEventListener("input", e=>{ e.target.value = e.target.value.toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,15); });
 

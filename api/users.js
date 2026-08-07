@@ -1,5 +1,5 @@
 // Gestión de usuarios: crear, activar/desactivar, cambiar PIN.
-// Requiere permiso 'gestionar_usuarios' (o rol admin)....
+// Requiere permiso 'gestionar_usuarios' (o rol admin).
 const { admin, requireUser } = require('./_admin');
 
 const DEFAULT_PERMS = {
@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
         user = await admin.auth().createUser({ email, password: `dlind-${pin}`, displayName: nombre });
       } catch (err) {
         if (err.code === 'auth/email-already-exists') {
-          // ¿Es un acceso huérfano de un usuario ya eliminado? → auto-reparar
+          // ¿Acceso huérfano de un usuario ya eliminado? → auto-reparar
           const orphan = await admin.auth().getUserByEmail(email);
           const doc = await db.doc(`usuarios/${orphan.uid}`).get();
           if (!doc.exists) {
@@ -70,7 +70,6 @@ module.exports = async (req, res) => {
       if (!target.exists) return res.status(404).json({ error: 'No existe' });
       if (target.data().rol === 'admin' && caller.rol !== 'admin')
         return res.status(403).json({ error: 'Solo un admin elimina a un admin' });
-      // borrar el acceso PRIMERO; si falla, no dejamos huérfanos
       try { await admin.auth().deleteUser(uid); }
       catch (err) { if (err.code !== 'auth/user-not-found') throw err; }
       await db.doc(`usuarios/${uid}`).delete();
