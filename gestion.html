@@ -11,6 +11,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
 :root{
+  color-scheme:dark;
   --red:#a41d3b; --red-dark:#7c1029; --gold:#d9b36a; --gold-soft:#e8cf9c;
   --ink:#0c1016; --card:#161d29; --card2:#1c2432;
   --text:#f4f1ec; --muted:#9aa3b2;
@@ -26,6 +27,8 @@ body{
     linear-gradient(160deg,#0c1016 0%, #131019 55%, #1a0c12 100%);
 }
 html,body{overscroll-behavior-y:contain}
+select option{background:#1c2432;color:#fff}
+input[type="search"]::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
 .hidden{display:none !important}
 /* header */
 header{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);background:linear-gradient(180deg,rgba(12,16,22,.94),rgba(12,16,22,.75));border-bottom:1px solid rgba(217,179,106,.18);padding-top:env(safe-area-inset-top)}
@@ -293,12 +296,12 @@ header{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);background:li
 .ptr.spin .ico{animation:ptrSpin .7s linear infinite}
 @keyframes ptrSpin{to{transform:rotate(360deg)}}
 /* notificación en primer plano (estilo WhatsApp Web) */
-.inapp{position:fixed;top:calc(12px + env(safe-area-inset-top));left:50%;transform:translateX(-50%) translateY(-130%);
+.inapp{position:fixed;top:0;left:50%;transform:translateX(-50%) translateY(calc(-100% - 20px));
   z-index:300;width:min(420px,92vw);cursor:pointer;background:linear-gradient(160deg,#1c2432,#161d29);
   border:1px solid rgba(217,179,106,.5);border-radius:16px;padding:14px 18px;
   box-shadow:0 18px 50px -12px rgba(0,0,0,.85);transition:transform .38s cubic-bezier(.22,.68,.35,1);
   display:flex;gap:12px;align-items:flex-start}
-.inapp.show{transform:translateX(-50%) translateY(0)}
+.inapp.show{transform:translateX(-50%) translateY(calc(12px + env(safe-area-inset-top)))}
 .inapp .ni-ico{flex:none;width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 30%, #c22548, var(--red) 55%, var(--red-dark));border:1.5px solid #fff;display:flex;align-items:center;justify-content:center;font-style:italic;font-weight:900;font-size:10px;color:#fff}
 .inapp .ni-txt b{display:block;font-size:13.5px;margin-bottom:2px}
 .inapp .ni-txt span{font-size:12.5px;color:var(--muted);line-height:1.45}
@@ -1009,6 +1012,11 @@ function openQm(code){
   setTimeout(()=>$("#qmQty").select(),150);
 }
 function closeQm(){ $("#qmodal").classList.remove("open"); }
+/* qmodal-enter-global: Enter = Guardar mientras el modal de cantidad esté abierto */
+document.addEventListener("keydown", e=>{
+  if(e.key!=="Enter") return;
+  if($("#qmodal").classList.contains("open")){ e.preventDefault(); saveQm(); }
+});
 /* Enter en el modal de cantidad = Guardar (teclado físico en desktop, "Intro" en móvil) */
 ["qmQty","qmMin"].forEach(id=>{
   $("#"+id).addEventListener("keydown", e=>{

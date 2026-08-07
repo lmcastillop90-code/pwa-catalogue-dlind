@@ -11,6 +11,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
 :root{
+  color-scheme:dark;
   --red:#a41d3b; --red-dark:#7c1029; --red-deep:#4d0a1a;
   --gold:#d9b36a; --gold-soft:#e8cf9c;
   --ink:#0c1016; --ink2:#141a24; --card:#161d29; --card2:#1c2432;
@@ -106,6 +107,7 @@ header{
 .search svg{flex:none;opacity:.6}
 .search input{flex:1;background:none;border:none;outline:none;color:var(--text);font-size:15.5px}
 .search input::placeholder{color:#6d7686}
+input[type="search"]::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
 .sx{flex:none;width:28px;height:28px;border-radius:50%;display:none;align-items:center;justify-content:center;
   background:rgba(255,255,255,.12);color:#fff;font-size:14px;font-weight:800;cursor:pointer;transition:var(--transition)}
 .sx:hover{background:var(--red)}
