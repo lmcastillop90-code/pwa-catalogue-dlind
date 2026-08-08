@@ -275,6 +275,24 @@ input[type="search"]::-webkit-search-cancel-button{-webkit-appearance:none;displ
 .cta.ghost{flex:0 0 auto;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);color:#fff}
 .cta.ghost:hover{border-color:var(--gold);color:var(--gold)}
 
+
+/* pestañas del detalle de producto */
+.d-tabs{display:flex;gap:6px;margin-top:18px;border-bottom:1px solid rgba(217,179,106,.22);padding-bottom:0}
+.d-tab{
+  padding:10px 16px;font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--muted);cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1px;
+  transition:var(--transition);white-space:nowrap;
+}
+.d-tab:hover{color:#fff}
+.d-tab.on{color:var(--gold);border-bottom-color:var(--gold)}
+.d-panel{display:none;margin-top:14px}
+.d-panel.on{display:block}
+.feat{display:flex;gap:12px;padding:12px 4px;border-bottom:1px solid rgba(255,255,255,.06)}
+.feat:last-child{border-bottom:none}
+.feat::before{content:"★";flex:none;color:var(--gold);font-size:13px;margin-top:1px}
+.feat b{display:block;font-size:13.5px;margin-bottom:3px;color:#fff}
+.feat span{font-size:13px;color:#c3cad6;line-height:1.55}
+
 /* ---------- BOTTOM NAV ---------- */
 .bnav{
   position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:55;
@@ -563,7 +581,7 @@ const PRODUCTS = [
    "img/PT-CE-12225_2.webp",
    "img/PT-CE-12225_3.webp"
   ],
-  "desc": "Neumático radial Powertrac Confort Expert en medida 12R 22.5. Especializado en eje de dirección. Índice de carga/velocidad 152/149M.",
+  "desc": "Banda de Rodamiento: Diseño de cinco nervaduras con microsurcos (micosipes), que proporciona un alto kilometraje, un desgaste uniforme y un bajo nivel de ruido.",
   "specs": [
    [
     "Medida",
@@ -647,7 +665,25 @@ const PRODUCTS = [
    ]
   ],
   "id": 2,
-  "model": "Power Plus+"
+  "model": "Power Plus+",
+  "features": [
+   [
+    "Diseño especial",
+    "Ayuda a la disipación del calor y a una mayor durabilidad."
+   ],
+   [
+    "Estructura mejorada",
+    "Proporciona mayor seguridad y un kilometraje más largo."
+   ],
+   [
+    "Resistencia superior",
+    "Ofrece mayor resistencia al desgaste irregular."
+   ],
+   [
+    "Banda de rodamiento más ancha",
+    "Contribuye a una conducción más segura."
+   ]
+  ]
  },
  {
   "code": "DC-RLB450-12225",
@@ -715,7 +751,29 @@ const PRODUCTS = [
    ]
   ],
   "id": 3,
-  "model": "RLB450"
+  "model": "RLB450",
+  "features": [
+   [
+    "Diseño de Bloques Profundos",
+    "Cuenta con una banda de rodamiento extra profunda (21.5 mm) que garantiza una vida útil prolongada y una tracción constante durante toda la vida del neumático."
+   ],
+   [
+    "Tracción Superior",
+    "El patrón de bloques abiertos y los surcos agresivos están optimizados para ofrecer un agarre máximo tanto en superficies secas como mojadas, evitando el patinamiento en el eje de fuerza."
+   ],
+   [
+    "Resistencia al Desgaste Irregular",
+    "Su estructura incluye hombros sólidos que estabilizan la pisada del neumático, reduciendo el desgaste prematuro y mejorando la estabilidad del vehículo bajo carga pesada."
+   ],
+   [
+    "Carcasa de Alta Ingeniería",
+    "Construida con la tecnología de Double Coin que permite múltiples reencauches. La integridad estructural de sus capas de acero protege contra cortes y perforaciones, maximizando el retorno de la inversión."
+   ],
+   [
+    "Eficiencia Térmica",
+    "Los compuestos de caucho utilizados están formulados para disipar el calor de manera eficiente, lo cual es crítico para mantener la seguridad en trayectos prolongados de carretera."
+   ]
+  ]
  },
  {
   "code": "DC-RLB460-12225",
@@ -782,7 +840,29 @@ const PRODUCTS = [
    ]
   ],
   "id": 4,
-  "model": "RLB460"
+  "model": "RLB460",
+  "features": [
+   [
+    "Profundidad de Banda Extra",
+    "Con 22.2 mm de profundidad, este modelo supera el promedio estándar, asegurando una mayor cantidad de caucho aprovechable y reduciendo el costo por kilómetro."
+   ],
+   [
+    "Diseño de Bloques Multi-Laminados",
+    "Incorpora laminillas finas dentro de los bloques que mejoran la evacuación de agua y la tracción en superficies resbaladizas, aumentando la seguridad operativa."
+   ],
+   [
+    "Hombros Robustos",
+    "Su diseño de hombro cerrado proporciona una excelente estabilidad lateral, minimizando el balanceo del vehículo y promoviendo un desgaste uniforme de la banda de rodamiento."
+   ],
+   [
+    "Resistencia a la Retención de Piedras",
+    "El diseño de los surcos está optimizado para expulsar objetos extraños, protegiendo el cinturón de acero contra daños por penetración."
+   ],
+   [
+    "Carcasa de Alta Resistencia",
+    "Al igual que los modelos premium de Double Coin, su estructura de acero está diseñada para soportar cargas pesadas y permitir múltiples ciclos de renovado (reencauche)."
+   ]
+  ]
  },
  {
   "code": "DC-RR705A-12225",
@@ -842,7 +922,25 @@ const PRODUCTS = [
    ]
   ],
   "id": 5,
-  "model": "RR705A"
+  "model": "RR705A",
+  "features": [
+   [
+    "Banda de Rodamiento de Costilla (Rib)",
+    "Presenta un diseño de banda de rodamiento optimizado para proporcionar una excelente estabilidad direccional y un manejo seguro en carreteras."
+   ],
+   [
+    "Resistencia al Desgaste",
+    "La geometría de sus costillas y el compuesto de caucho especializado están formulados para un desgaste lento y uniforme, lo que resulta en un alto kilometraje y una mayor vida útil del neumático."
+   ],
+   [
+    "Eficiencia de Frenado",
+    "Los múltiples surcos y laminillas (sipes) mejoran el agarre en condiciones de carretera mojada, ofreciendo una distancia de frenado reducida."
+   ],
+   [
+    "Ideal para Reencauche",
+    "Su robusta construcción de carcasa de 18PR está optimizada para soportar múltiples procesos de reencauche, maximizando la rentabilidad y minimizando el costo operativo por kilómetro."
+   ]
+  ]
  },
  {
   "code": "DC-RR99-12225",
@@ -916,7 +1014,29 @@ const PRODUCTS = [
    "dur": "1:29"
   },
   "id": 6,
-  "model": "RR99"
+  "model": "RR99",
+  "features": [
+   [
+    "Compuesto de Banda Resistente",
+    "Formulado con compuestos especiales que resisten cortes, astillamientos y desgarros, prolongando la vida útil del neumático en terrenos agresivos."
+   ],
+   [
+    "Diseño de Costillas Robustas",
+    "Su patrón de banda de rodamiento cuenta con costillas anchas que proporcionan una excelente estabilidad de manejo y una tracción confiable en diversas condiciones climáticas."
+   ],
+   [
+    "Protección de la Carcasa",
+    "Equipado con protectores en la base de los surcos que minimizan la retención de piedras, evitando daños por perforación hacia los cinturones de acero."
+   ],
+   [
+    "Versatilidad de Ejes",
+    "Al ser un neumático \"All Position\", ofrece un rendimiento óptimo tanto en ejes de dirección como en ejes libres, adaptándose a las necesidades de la flota."
+   ],
+   [
+    "Capacidad de Reencauche",
+    "La estructura reforzada de acero no solo soporta cargas extremas, sino que también mantiene la integridad necesaria para múltiples procesos de renovado, optimizando la rentabilidad."
+   ]
+  ]
  },
  {
   "code": "PT-PP-29580",
@@ -964,7 +1084,25 @@ const PRODUCTS = [
    ]
   ],
   "id": 7,
-  "model": "Power Plus+"
+  "model": "Power Plus+",
+  "features": [
+   [
+    "",
+    "Diseño especial para asegurar la disipación del calor y una mayor durabilidad."
+   ],
+   [
+    "",
+    "Estructura mejorada para una mayor seguridad y un kilometraje más largo."
+   ],
+   [
+    "",
+    "Resistencia superior al desgaste irregular."
+   ],
+   [
+    "",
+    "La banda de rodamiento más ancha contribuye a una conducción más segura."
+   ]
+  ]
  },
  {
   "code": "DC-RR208-29580",
@@ -1092,7 +1230,29 @@ const PRODUCTS = [
    ]
   ],
   "id": 9,
-  "model": "RR680"
+  "model": "RR680",
+  "features": [
+   [
+    "Diseño de Cinco Costillas",
+    "Su patrón de banda de rodamiento con cinco costillas anchas distribuye la presión de carga de manera uniforme, lo que minimiza el desgaste irregular y extiende la vida útil del neumático."
+   ],
+   [
+    "Ranuras de Micro-Laminillas",
+    "Equipado con laminillas en las costillas que ayudan a disipar el calor y mejoran el agarre en superficies mojadas, reduciendo el riesgo de hidroplaneo."
+   ],
+   [
+    "Protección Lateral",
+    "Los costados están reforzados para resistir abrasiones y daños por roces contra aceras en entornos urbanos o regionales, protegiendo la integridad de la carcasa."
+   ],
+   [
+    "Baja Resistencia al Rodamiento",
+    "Compuesto de caucho optimizado para reducir la fricción interna, lo que contribuye directamente a un menor consumo de combustible y una operación más ecológica."
+   ],
+   [
+    "Durabilidad de la Carcasa para Reencauche",
+    "La estructura de cinturones de acero de alta resistencia garantiza una base sólida para múltiples renovados, maximizando el ciclo de vida del producto y la rentabilidad del transportista."
+   ]
+  ]
  },
  {
   "code": "DC-RR706-29580",
@@ -1160,7 +1320,29 @@ const PRODUCTS = [
    ]
   ],
   "id": 10,
-  "model": "RR706"
+  "model": "RR706",
+  "features": [
+   [
+    "Diseño de Banda Extra Ancha",
+    "Su huella de contacto ampliada proporciona una estabilidad excepcional y una distribución de peso uniforme, lo que es vital para vehículos con centros de gravedad altos o cargas pesadas."
+   ],
+   [
+    "Compuesto Anti-Cortes y Desgarros",
+    "Utiliza una mezcla de caucho de alta ingeniería que protege la banda de rodamiento contra el astillamiento y las agresiones típicas de caminos con piedra suelta o escombros."
+   ],
+   [
+    "Canales de Evacuación Eficientes",
+    "El diseño de los surcos permite una limpieza rápida del lodo y previene la retención de piedras, protegiendo los cinturones de acero internos de posibles perforaciones."
+   ],
+   [
+    "Hombros Reforzados",
+    "Cuenta con bloques laterales macizos que ofrecen una mayor resistencia a los impactos laterales y mejoran la tracción en maniobras difíciles fuera de carretera."
+   ],
+   [
+    "Carcasa de Larga Vida",
+    "La estructura interna de acero ultra-resistente está optimizada para soportar los rigores del servicio mixto, manteniendo la integridad necesaria para múltiples procesos de reencauche, lo que reduce significativamente el costo operativo a largo plazo."
+   ]
+  ]
  },
  {
   "code": "DC-RR99-29580",
@@ -1220,7 +1402,25 @@ const PRODUCTS = [
    ]
   ],
   "id": 11,
-  "model": "RR99"
+  "model": "RR99",
+  "features": [
+   [
+    "Patrón de Costilla (Rib)",
+    "El diseño de la banda de rodamiento con 5 costillas (5-Rib) promueve una baja resistencia al rodamiento, lo que se traduce en ahorro de combustible y un desgaste uniforme."
+   ],
+   [
+    "Seguridad Direccional",
+    "Los surcos anchos y profundos garantizan una excelente evacuación de agua, brindando una maniobrabilidad y control direccional óptimos en condiciones de carretera mojada."
+   ],
+   [
+    "Durabilidad de la Carcasa",
+    "La construcción radial de acero (18PR) ofrece una carcasa robusta y resistente, ideal para múltiples ciclos de reencauche, maximizando la inversión."
+   ],
+   [
+    "Uso Versátil",
+    "Adecuado para el uso en la parte frontal (dirección) de tractocamiones y camiones, así como en los ejes libres (remolque/trailer)."
+   ]
+  ]
  },
  {
   "code": "DC-RR902-31580",
@@ -1280,7 +1480,25 @@ const PRODUCTS = [
    ]
   ],
   "id": 12,
-  "model": "RR902"
+  "model": "RR902",
+  "features": [
+   [
+    "Patrón de Bloques Agresivo",
+    "El diseño de la banda de rodamiento con bloques anchos y profundos está optimizado para proporcionar una tracción excepcional y un agarre constante en superficies irregulares, lodo o grava."
+   ],
+   [
+    "Autolimpieza",
+    "Los grandes espacios entre los bloques permiten la autolimpieza de la banda de rodamiento, expulsando piedras y lodo para mantener la máxima tracción en condiciones de terreno blando."
+   ],
+   [
+    "Durabilidad en Condiciones Severas",
+    "La construcción de 18 o 20PR, junto con un compuesto de caucho resistente a cortes y astillas, garantiza una larga vida útil y protección contra daños frecuentes en operaciones fuera de carretera."
+   ],
+   [
+    "Máxima Carga",
+    "Con un índice de carga alto (156), es perfecto para manejar las cargas más pesadas típicas de los fletes de alimentos y productos agrícolas."
+   ]
+  ]
  },
  {
   "code": "DD-15W40",
@@ -1714,10 +1932,25 @@ function openSheet(id){
         <div class="d-stock ${st.cls}">● ${st.txt}${(p.stock&&p.stock>0)?` · ${p.stock} unid.`:""}</div>
       </div>
       <p class="d-desc">${p.desc}</p>
-      <div class="specs">
-        <h4>⚙ Especificaciones técnicas</h4>
-        ${p.specs.map(s=>`<div class="spec-row"><span>${s[0]}</span><b>${s[1]}</b></div>`).join("")}
+      ${(p.features&&p.features.length)?`
+      <div class="d-tabs">
+        <div class="d-tab on" onclick="dtab(this,0)">⚙ Especificaciones</div>
+        <div class="d-tab" onclick="dtab(this,1)">★ Características</div>
+      </div>`:""}
+      <div class="d-panel on" id="dpanel0">
+        <div class="specs">
+          <h4>⚙ Especificaciones técnicas</h4>
+          ${p.specs.map(s=>`<div class="spec-row"><span>${s[0]}</span><b>${s[1]}</b></div>`).join("")}
+        </div>
       </div>
+      ${(p.features&&p.features.length)?`
+      <div class="d-panel" id="dpanel1">
+        <div class="specs"><h4>★ Características del fabricante</h4>
+          <div style="padding:4px 14px">
+            ${p.features.map(f=>`<div class="feat"><div>${f[0]?`<b>${f[0]}</b>`:""}<span>${f[1]}</span></div></div>`).join("")}
+          </div>
+        </div>
+      </div>`:""}
       ${p.variants?`<div class="specs" style="border:none;margin-top:16px"><h4 style="background:none;border:none;padding:0 0 10px">Presentaciones disponibles</h4></div>
       <div class="variants" style="margin-top:0">${p.variants.map((v,i)=>`<span class="variant ${i===0?'on':''}" onclick="pickVariant(this)">${v}</span>`).join("")}</div>`:""}
     </div>`;
@@ -1835,6 +2068,11 @@ function zoomBy(d){
     }
   }, {passive:true});
 })();
+
+function dtab(el, i){
+  document.querySelectorAll(".d-tab").forEach((t,j)=>t.classList.toggle("on", j===i));
+  document.querySelectorAll(".d-panel").forEach((pn,j)=>pn.classList.toggle("on", j===i));
+}
 function pickVariant(el){
   el.parentElement.querySelectorAll(".variant").forEach(v=>v.classList.remove("on"));
   el.classList.add("on");
