@@ -1,5 +1,5 @@
 /* DLIND Catálogo — Service Worker (offline-first) */
-const CACHE = 'dlind-catalogo-v5';
+const CACHE = 'dlind-catalogo-v6';
 const PRECACHE = [
   './',
   './index.html',
@@ -9,6 +9,8 @@ const PRECACHE = [
   './icons/icon-512.png',
   './icons/icon-maskable-512.png',
   './videos/rr99-rendimiento.mp4',
+  './videos/rr705a-rr208.mp4',
+  './videos/pt-pp-29580.mp4',
   './img/DC-RLB450-12225_1.webp',
   './img/DC-RLB450-12225_2.webp',
   './img/DC-RLB450-12225_3.webp',
@@ -55,7 +57,9 @@ const PRECACHE = [
   './img/PT-PP-29580_1.webp',
   './img/PT-PP-29580_2.webp',
   './img/PT-PP-29580_3.webp',
-  './img/poster_rr99.webp'
+  './img/poster_rr99.webp',
+  './img/poster_rr705a.webp',
+  './img/poster_pt29580.webp'
 ];
 /* dominios que NUNCA se cachean (datos vivos y APIs) */
 const LIVE = ['firestore.googleapis.com', 'identitytoolkit.googleapis.com',
