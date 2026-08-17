@@ -2371,7 +2371,8 @@ function filtered(){
 function stockInfo(p){
   if(p.stock===undefined || p.stock===null) return {cls:"ok", txt:"Disponible"};
   if(p.stock===0) return {cls:"out", txt:"Agotado"};
-  if(p.stock<=12) return {cls:"low", txt:`¡Últimas ${p.stock}!`};
+  const min = (p.stockMin!==undefined && p.stockMin!==null) ? p.stockMin : 8;
+  if(p.stock<=min) return {cls:"low", txt:`¡Últimas ${p.stock}!`};
   return {cls:"ok", txt:"Disponible"};
 }
 function coverSrc(p){
@@ -2656,7 +2657,11 @@ const FS_URL = "https://firestore.googleapis.com/v1/projects/dlind-catalogo/data
 function applyLiveStock(map){
   let changed=false;
   PRODUCTS.forEach(p=>{
-    if(p.code && map[p.code]!==undefined && p.stock!==map[p.code]){ p.stock=map[p.code]; changed=true; }
+    const e = p.code ? map[p.code] : undefined;
+    if(e===undefined) return;
+    const q = (typeof e==="object" && e!==null) ? e.q : e;          // compat: caché vieja era solo número
+    const m = (typeof e==="object" && e!==null) ? e.m : undefined;
+    if(p.stock!==q || p.stockMin!==m){ p.stock=q; p.stockMin=m; changed=true; }
   });
   if(changed && !document.getElementById("catalogView").classList.contains("hidden")) renderGrid();
 }
@@ -2668,7 +2673,10 @@ async function syncStock(){
     (j.documents||[]).forEach(d=>{
       const code = d.name.split("/").pop();
       const f = d.fields||{};
-      map[code] = parseInt((f.cantidad&&(f.cantidad.integerValue??f.cantidad.doubleValue))??0);
+      map[code] = {
+        q: parseInt((f.cantidad&&(f.cantidad.integerValue??f.cantidad.doubleValue))??0),
+        m: parseInt((f.stockMinimo&&(f.stockMinimo.integerValue??f.stockMinimo.doubleValue))??8),
+      };
     });
     localStorage.setItem("dlind_stock", JSON.stringify(map));
     applyLiveStock(map);
