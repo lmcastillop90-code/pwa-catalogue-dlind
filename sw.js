@@ -1,5 +1,5 @@
 /* DLIND Catálogo — Service Worker (offline-first) */
-const CACHE = 'dlind-catalogo-v6';
+const CACHE = 'dlind-catalogo-v9';
 const PRECACHE = [
   './',
   './index.html',
@@ -9,8 +9,9 @@ const PRECACHE = [
   './icons/icon-512.png',
   './icons/icon-maskable-512.png',
   './videos/rr99-rendimiento.mp4',
+  './videos/pt-tracpro-29580.mp4',
+  './videos/pt-tracpro-31580.mp4',
   './videos/rr705a-rr208.mp4',
-  './videos/pt-pp-29580.mp4',
   './img/DC-RLB450-12225_1.webp',
   './img/DC-RLB450-12225_2.webp',
   './img/DC-RLB450-12225_3.webp',
@@ -58,8 +59,24 @@ const PRECACHE = [
   './img/PT-PP-29580_2.webp',
   './img/PT-PP-29580_3.webp',
   './img/poster_rr99.webp',
-  './img/poster_rr705a.webp',
-  './img/poster_pt29580.webp'
+  './img/poster_tracpro29580.webp',
+  './img/poster_tracpro31580.webp',
+  './img/PT-TRACPRO-29580_1.webp',
+  './img/PT-TRACPRO-29580_2.webp',
+  './img/PT-CE-31580_1.webp',
+  './img/PT-CE-31580_2.webp',
+  './img/PT-CE-31580_3.webp',
+  './img/PT-TRACPRO-31580_1.webp',
+  './img/PT-TRACPRO-31580_2.webp',
+  './img/BT-30H_1.webp',
+  './img/BT-31H_1.webp',
+  './img/BT-31H_2.webp',
+  './img/FT-224804_1.webp',
+  './img/FT-224804_2.webp',
+  './img/FT-224935_1.webp',
+  './img/FT-224935_2.webp',
+  './img/FT-224935_3.webp',
+  './img/poster_rr705a.webp'
 ];
 /* dominios que NUNCA se cachean (datos vivos y APIs) */
 const LIVE = ['firestore.googleapis.com', 'identitytoolkit.googleapis.com',
