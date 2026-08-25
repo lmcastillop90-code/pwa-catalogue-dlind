@@ -1910,8 +1910,8 @@ const PRODUCTS = [
   "isNew": true,
   "has360": false,
   "gallery": [
-   "img/DD-15W40_1.webp",
-   "img/DD-15W40_2.webp"
+   "img/DD-15W40_2.webp",
+   "img/DD-15W40_1.webp"
   ],
   "desc": "Aceite premium para motores diésel de trabajo pesado, con bases sintéticas y convencionales de alta calidad. Protege y extiende la vida útil de motores diésel modernos de cuatro tiempos con tecnologías de control de emisiones (EGR, DPF, SCR).",
   "specs": [
@@ -1953,7 +1953,8 @@ const PRODUCTS = [
   "isNew": false,
   "has360": false,
   "gallery": [
-   "img/DD-SAE50_1.webp"
+   "img/DD-SAE50_1.webp",
+   "img/DD-15W40_1.webp"
   ],
   "desc": "Aceite monogrado premium de bajo contenido de cenizas para motores diésel de modelos anteriores, en aplicaciones dentro y fuera de carretera.",
   "specs": [
@@ -1987,7 +1988,8 @@ const PRODUCTS = [
   "isNew": false,
   "has360": false,
   "gallery": [
-   "img/DD-80W90_1.webp"
+   "img/DD-80W90_1.webp",
+   "img/DD-15W40_1.webp"
   ],
   "desc": "DRYDENE GEARALL® MP: aceite premium multipropósito para engranajes de extrema presión (API GL-5/MT-1), para vehículos de servicio pesado con engranajes hipoides o diferenciales convencionales. Recomendado para diferenciales traseros y delanteros, engranajes cónicos y transmisiones manuales que especifican un fluido GL-5. Nota: en diferenciales de deslizamiento limitado (limited-slip), usar solo para reposición de nivel.",
   "specs": [
@@ -2204,7 +2206,7 @@ const PRODUCTS = [
  },
  {
   "code": "FP-4515",
-  "cat": "repuestos",
+  "cat": "frenos",
   "brand": "FIRST PACIFIC",
   "name": "Bandas de Freno Eje 4515",
   "sub": "Freno de aire · Juego completo",
@@ -2235,7 +2237,7 @@ const PRODUCTS = [
  },
  {
   "code": "FP-4707",
-  "cat": "repuestos",
+  "cat": "frenos",
   "brand": "FIRST PACIFIC",
   "name": "Bandas de Freno Eje 4707",
   "sub": "Freno de aire · Juego completo",
@@ -2265,7 +2267,7 @@ const PRODUCTS = [
  },
  {
   "code": "FP-4709",
-  "cat": "repuestos",
+  "cat": "frenos",
   "brand": "FORTPRO",
   "name": "Bandas de Freno Eje 4709",
   "sub": "Freno de aire · Juego completo",
@@ -2300,7 +2302,7 @@ const PRODUCTS = [
  },
  {
   "code": "FT-224804",
-  "cat": "repuestos",
+  "cat": "frenos",
   "brand": "FORTPRO",
   "name": "Kit de Reparación de Frenos",
   "sub": "F224804 · Frenos de aire",
@@ -2355,7 +2357,7 @@ const PRODUCTS = [
  },
  {
   "code": "FT-224935",
-  "cat": "repuestos",
+  "cat": "frenos",
   "brand": "FORTPRO",
   "name": "Tamborete",
   "sub": "F224935 · Tambor de freno trasero",
@@ -2403,7 +2405,8 @@ const CATS = [
   {id:"cauchos", label:"Cauchos", sub:"Double Coin y Powertrac · 12R, 295/80R y 315/80R 22.5", img:"img/DC-RR99-12225_1.webp"},
   {id:"lubricantes", label:"Lubricantes", sub:"Aceites, valvulina y grasas Drydene", img:"img/DD-15W40_1.webp"},
   {id:"baterias", label:"Baterías", sub:"Performance USA · Transporte pesado", img:"img/BT-31H_1.webp"},
-  {id:"repuestos", label:"Repuestos", sub:"Bandas de freno y componentes", img:"img/FP-4709_1.webp"},
+  {id:"frenos", label:"Frenos", sub:"Bandas, kits y tamboretes", img:"img/FP-4709_1.webp"},
+  {id:"repuestos", label:"Repuestos", sub:"Repuestos para transporte pesado", img:"img/FT-224804_1.webp"},
 ];
 
 let state = {cat:"all", brand:"all", q:""};
@@ -2416,7 +2419,7 @@ function brandsFor(cat){
   return ["all",...set];
 }
 function renderTiles(){
-  $("#catTiles").innerHTML = CATS.map((c,i)=>{
+  $("#catTiles").innerHTML = CATS.filter(c=>PRODUCTS.some(p=>p.cat===c.id)).map((c,i)=>{
     const n = PRODUCTS.filter(p=>p.cat===c.id).length;
     return `
     <div class="cat-tile" style="transition-delay:${i*90}ms" onclick="openCat('${c.id}')">
@@ -2848,9 +2851,23 @@ async function installApp(){
     toast('📲 Para instalar: abre el menú del navegador (⋮ o Compartir) y elige "Instalar aplicación" / "Añadir a pantalla de inicio"');
   }
 }
+function _swAutoUpdate(reg){
+  // buscar versión nueva al abrir, al volver a la app y cada 30 min
+  const chk = () => reg.update().catch(()=>{});
+  chk();
+  document.addEventListener("visibilitychange", () => { if(!document.hidden) chk(); });
+  setInterval(chk, 30*60*1000);
+}
+// si ya había una versión controlando y entra la nueva, refrescar una sola vez
+if (navigator.serviceWorker && navigator.serviceWorker.controller){
+  let _swR = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (_swR) return; _swR = true; location.reload();
+  });
+}
 if ('serviceWorker' in navigator && location.protocol !== 'file:'){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(()=>{});
+    navigator.serviceWorker.register('sw.js').then(_swAutoUpdate).catch(()=>{});
   });
 }
 </script>
