@@ -1,5 +1,5 @@
 /* DLIND Catálogo — Service Worker (offline-first) */
-const CACHE = 'dlind-catalogo-v16';
+const CACHE = 'dlind-catalogo-v18';
 const PRECACHE = [
   './',
   './index.html',
@@ -14,6 +14,7 @@ const PRECACHE = [
   './videos/pt-tracpro-29580.mp4',
   './videos/pt-tracpro-31580.mp4',
   './videos/rr705a-rr208.mp4',
+  './img/DC-RLB451-29580_1.webp',
   './img/DC-RLB450-12225_1.webp',
   './img/DC-RLB450-12225_2.webp',
   './img/DC-RLB450-12225_3.webp',
