@@ -1,5 +1,5 @@
 /* DLIND Catálogo — Service Worker (offline-first) */
-const CACHE = 'dlind-catalogo-v18';
+const CACHE = 'dlind-catalogo-v19';
 const PRECACHE = [
   './',
   './index.html',
