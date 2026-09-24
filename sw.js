@@ -1,5 +1,5 @@
 /* DLIND Catálogo — Service Worker (offline-first) */
-const CACHE = 'dlind-catalogo-v23';
+const CACHE = 'dlind-catalogo-v25';
 const PRECACHE = [
   './',
   './index.html',
@@ -20,12 +20,12 @@ const PRECACHE = [
   './img/FT-224628_3.webp',
   './img/FT-224703_1.webp',
   './img/FT-224703_2.webp',
-  './img/FT-224703_3.webp',
   './img/FT-224710_1.webp',
   './img/FT-224710_2.webp',
   './img/FT-224710_3.webp',
   './img/FT-224730_1.webp',
   './img/FT-224730_2.webp',
+  './img/FT-224730_3.webp',
   './img/FT-224735_1.webp',
   './img/FT-224739_1.webp',
   './img/FT-224739_2.webp',
@@ -47,6 +47,7 @@ const PRECACHE = [
   './img/FT-245694_1.webp',
   './img/FT-245694_2.webp',
   './img/FT-245694_3.webp',
+  './img/FT-245694_4.webp',
   './img/FT-245695_1.webp',
   './img/FT-245695_2.webp',
   './img/FT-245695_3.webp',
@@ -57,14 +58,12 @@ const PRECACHE = [
   './img/FT-247705_2.webp',
   './img/FT-247705_3.webp',
   './img/FT-276113_1.webp',
-  './img/FT-276113_2.webp',
   './img/FT-276114_1.webp',
   './img/FT-276126_1.webp',
   './img/FT-276126_2.webp',
   './img/FT-276126_3.webp',
   './img/FT-276280_1.webp',
   './img/FT-276280_2.webp',
-  './img/FT-276280_3.webp',
   './img/FP-4707F_1.webp',
   './img/FT-224680_1.webp',
   './img/FT-224680_2.webp',
