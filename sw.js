@@ -1,5 +1,5 @@
 /* DLIND Catálogo — Service Worker (offline-first) */
-const CACHE = 'dlind-catalogo-v28';
+const CACHE = 'dlind-catalogo-v29';
 const PRECACHE = [
   './',
   './index.html',
@@ -68,6 +68,9 @@ const PRECACHE = [
   './img/FT-235361_3.webp',
   './img/FT-235362_1.webp',
   './img/FT-235362_2.webp',
+  './img/RA-ART_1.webp',
+  './img/RA-ART_2.webp',
+  './img/RA-ART_3.webp',
   './img/FT-276280_2.webp',
   './img/FP-4707F_1.webp',
   './img/FT-224680_1.webp',
